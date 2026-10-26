@@ -8,6 +8,8 @@
 
     <!-- Needed to find the Muse app (and the original's fallback packages) on the device. -->
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+    <!-- Ask page only: Google text predictions while typing. -->
+    <uses-permission android:name="android.permission.INTERNET" />
     <!-- Wallpaper read for the glass pill (file lane, older APIs). -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />

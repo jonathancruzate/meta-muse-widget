@@ -54,6 +54,22 @@ public class ComposeActivity extends Activity {
     private EditText input;
     private LinearLayout list;
 
+    // Google text predictions (the suggestqueries endpoint Chrome
+    // and Firefox use — no key, no billing). Fetched debounced on
+    // a single background thread; results merge under Suggestions.
+    // Any failure (offline, timeout) leaves the local suggestions
+    // standing — the page never depends on the network.
+    private final java.util.concurrent.ExecutorService net =
+            java.util.concurrent.Executors.newSingleThreadExecutor();
+    private final android.os.Handler uiHandler =
+            new android.os.Handler(android.os.Looper.getMainLooper());
+    private volatile int suggestToken = 0;
+    private String pendingQuery = "";
+    private List<String> webSuggestions = new ArrayList<>();
+    private final Runnable suggestDebounce = new Runnable() {
+        @Override public void run() { fetchSuggestions(pendingQuery); }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -100,6 +116,7 @@ public class ComposeActivity extends Activity {
             @Override public void beforeTextChanged(CharSequence s, int a, int b, int c) {}
             @Override public void onTextChanged(CharSequence s, int a, int b, int c) {
                 buildList(s.toString());
+                onQueryChanged(s.toString().trim());
             }
             @Override public void afterTextChanged(Editable s) {}
         });
@@ -184,11 +201,29 @@ public class ComposeActivity extends Activity {
                 starterHits.add(s);
             }
         }
-        if (!starterHits.isEmpty()) {
-            addSectionHeader(getString(R.string.suggestions_title), false);
-            for (String s : starterHits) addRow(s, R.drawable.ic_search, false);
+        // Google predictions first, then local starters, deduped
+        // against everything already on screen.
+        List<String> suggestRows = new ArrayList<>();
+        for (String s : webSuggestions) {
+            String low = s.toLowerCase(Locale.US);
+            boolean dup = low.equals(q) || recentHits.contains(s);
+            for (String shown : suggestRows) {
+                if (shown.toLowerCase(Locale.US).equals(low)) dup = true;
+            }
+            if (!dup) suggestRows.add(s);
         }
-        if (recentHits.isEmpty() && starterHits.isEmpty()) {
+        for (String s : starterHits) {
+            boolean dup = false;
+            for (String shown : suggestRows) {
+                if (shown.equalsIgnoreCase(s)) dup = true;
+            }
+            if (!dup) suggestRows.add(s);
+        }
+        if (!suggestRows.isEmpty()) {
+            addSectionHeader(getString(R.string.suggestions_title), false);
+            for (String s : suggestRows) addRow(s, R.drawable.ic_search, false);
+        }
+        if (recentHits.isEmpty() && suggestRows.isEmpty()) {
             TextView hint = new TextView(this);
             hint.setText(R.string.compose_no_suggestions);
             hint.setTextSize(14);
@@ -196,6 +231,74 @@ public class ComposeActivity extends Activity {
             hint.setPadding(0, dp(18), 0, 0);
             list.addView(hint);
         }
+    }
+
+    // ---- Google predictions ----
+
+    private void onQueryChanged(String query) {
+        suggestToken++;
+        webSuggestions = new ArrayList<>();
+        uiHandler.removeCallbacks(suggestDebounce);
+        if (query.length() < 2) return;
+        pendingQuery = query;
+        uiHandler.postDelayed(suggestDebounce, 200);
+    }
+
+    private void fetchSuggestions(final String query) {
+        final int token = suggestToken;
+        net.execute(new Runnable() {
+            @Override public void run() {
+                final List<String> out = new ArrayList<>();
+                java.net.HttpURLConnection conn = null;
+                try {
+                    String url = "https://suggestqueries.google.com/complete/search"
+                            + "?client=firefox&hl=en&q="
+                            + java.net.URLEncoder.encode(query, "UTF-8");
+                    conn = (java.net.HttpURLConnection)
+                            new java.net.URL(url).openConnection();
+                    conn.setConnectTimeout(2500);
+                    conn.setReadTimeout(2500);
+                    conn.setRequestProperty("User-Agent",
+                            "Mozilla/5.0 (Linux; Android) MuseWidget");
+                    java.io.InputStream in = conn.getInputStream();
+                    java.io.ByteArrayOutputStream buf = new java.io.ByteArrayOutputStream();
+                    byte[] chunk = new byte[4096];
+                    int n;
+                    while ((n = in.read(chunk)) > 0) buf.write(chunk, 0, n);
+                    in.close();
+                    org.json.JSONArray root =
+                            new org.json.JSONArray(buf.toString("UTF-8"));
+                    org.json.JSONArray arr = root.optJSONArray(1);
+                    if (arr != null) {
+                        for (int i = 0; i < arr.length() && out.size() < 6; i++) {
+                            String s = arr.optString(i, "").trim();
+                            if (!s.isEmpty()) out.add(s);
+                        }
+                    }
+                } catch (Exception e) {
+                    out.clear(); // offline or blocked: local rows stand
+                } finally {
+                    if (conn != null) conn.disconnect();
+                }
+                if (out.isEmpty()) return;
+                uiHandler.post(new Runnable() {
+                    @Override public void run() {
+                        if (token != suggestToken || isFinishing()) return;
+                        String now = input.getText().toString().trim();
+                        if (!now.equals(query)) return;
+                        webSuggestions = out;
+                        buildList(now);
+                    }
+                });
+            }
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        uiHandler.removeCallbacks(suggestDebounce);
+        net.shutdownNow();
+        super.onDestroy();
     }
 
     private void addSectionHeader(String title, boolean withClearAll) {
