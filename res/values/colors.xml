@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- One UI palette, spec section 3 + One UI 9 addendum (standard section 9).
+     Light theme values; values-night overrides the grounds. -->
+<resources>
+    <color name="ground">#FAFAFA</color>
+    <color name="container">#FFFFFF</color>
+    <color name="component">#E8E8EA</color>
+    <color name="foreground">#2E2E30</color>
+    <color name="secondary">#76767A</color>
+    <color name="primary">#0381FE</color>
+    <color name="primary_dark">#0072DE</color>
+    <color name="activated">#3E91FF</color>
+    <color name="glass_fill">#B8FFFFFF</color>
+    <!-- Finder-modeled widget pill: the One UI 9 Finder bar is a matte,
+         borderless light pill (its on-screen read over a wallpaper
+         sampled #939393 in a device screenshot — a translucent
+         light fill; the solid equivalent is the spec component tone). -->
+    <!-- Exact value decomposed from One UI Home 18.0.07.59:
+         finder_search_bar_background_color #f2e9e9e9 (the F2 alpha
+         is applied in BarStyle; this is the RGB). -->
+    <color name="finder_fill">#E9E9E9</color>
+    <color name="glass_border">#0F000000</color>
+    <color name="nowbar_fill">#F20A0A0A</color>
+    <color name="on_primary">#FFFFFF</color>
+    <color name="divider">#1F000000</color>
+    <!-- Stephany theme: a muted rose pink (#B46C5D, median of lit
+         patches sampled from a reference photo), with soft and strong
+         family tones derived from the same hue. -->
+    <color name="stephany_accent">#B46C5D</color>
+    <color name="stephany_accent_soft">#EFDBD6</color>
+    <color name="stephany_accent_strong">#96544A</color>
+</resources>
