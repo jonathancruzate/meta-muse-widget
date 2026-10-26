@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Static stand-in for the rendered pill bitmap, used where the
+     layout itself is previewed (the widget picker's previewLayout):
+     the same Finder glass — translucent fill, gradient, hairline. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <corners android:radius="100dp" />
+    <gradient
+        android:angle="270"
+        android:endColor="#E9E9E9"
+        android:startColor="#F4F4F4" />
+    <stroke android:width="0.5dp" android:color="#33000000" />
+</shape>

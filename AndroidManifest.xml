@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.samsung.oneui9.metamusewidget">
+
+    <uses-sdk
+        android:minSdkVersion="24"
+        android:targetSdkVersion="35" />
+
+    <!-- Needed to find the Muse app (and the original's fallback packages) on the device. -->
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+    <!-- Wallpaper read for the glass pill (file lane, older APIs). -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+
+    <application
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:theme="@style/AppTheme">
+
+        <!-- The ask page: type with suggestions, Enter sends the
+             text into Muse's composer. Opened by the widget bar. -->
+        <activity
+            android:name=".ComposeActivity"
+            android:exported="false"
+            android:label="@string/ask_title"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+
+        <!-- Hub: the full destination catalog, One UI styled. -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Customize: Google-widget-style settings screen (live
+             preview, themes, Custom hue/saturation, transparency,
+             shortcut). Also the widgets' configure activity. -->
+        <activity
+            android:name=".WidgetCustomizeActivity"
+            android:exported="true"
+            android:label="@string/customize_title">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+
+        <!-- Router: fires one catalog URI at Muse, with the fallback chain. -->
+        <activity
+            android:name=".LaunchMuseActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:noHistory="true"
+            android:theme="@android:style/Theme.NoDisplay" />
+
+        <!-- 4x1 One UI 9 glass search-bar widget (the original, restyled to spec). -->
+        <receiver
+            android:name=".SearchBarWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_search_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info_search" />
+        </receiver>
+
+        <!-- 4x2 One UI 9 focus-block shortcut grid widget. -->
+        <receiver
+            android:name=".GridWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_grid_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info_grid" />
+        </receiver>
+    </application>
+</manifest>

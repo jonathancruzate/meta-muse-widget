@@ -1,0 +1,14 @@
+# Signing material — never commit
+keystore/
+keystore-password.txt
+
+# Build outputs
+build/
+*.apk
+*.idsig
+
+# Local toolchain + research artifacts (not part of the app)
+/tools/
+/refs/
+*.smali
+muse-*.apk
