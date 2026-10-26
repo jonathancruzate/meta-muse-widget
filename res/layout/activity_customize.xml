@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Customize screen, modeled on the Google search widget's:
+     live preview on top, theme presets, Custom hue/saturation,
+     a transparency slider, and the shortcut row. 24dp margins. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/ground"
+    android:orientation="vertical"
+    android:paddingStart="24dp"
+    android:paddingEnd="24dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="@string/customize_title"
+        android:textColor="@color/foreground"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/bg_card"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"
+        android:text="@string/preview"
+        android:textColor="@color/secondary"
+        android:textSize="12sp" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:layout_marginTop="12dp">
+
+        <ImageView
+            android:id="@+id/preview_pill"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_gravity="center_vertical"
+            android:contentDescription="@null"
+            android:scaleType="fitXY" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="14dp"
+            android:paddingEnd="10dp">
+
+            <ImageView
+                android:id="@+id/preview_logo"
+                android:layout_width="34dp"
+                android:layout_height="24dp"
+                android:contentDescription="@string/muse_logo_desc"
+                android:src="@drawable/ic_muse_m" />
+
+            <TextView
+                android:id="@+id/preview_hint"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:singleLine="true"
+                android:text="@string/widget_search_hint"
+                android:textSize="16sp" />
+
+            <ImageView
+                android:id="@+id/preview_shortcut"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:contentDescription="@string/shortcut_desc"
+                android:padding="9dp"
+                android:src="@drawable/ic_open" />
+        </LinearLayout>
+    </FrameLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="20dp"
+        android:layout_weight="1"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_card"
+            android:orientation="vertical"
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp"
+            android:paddingTop="14dp"
+            android:paddingBottom="14dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/theme_section"
+                android:textColor="@color/foreground"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <RadioGroup
+                android:id="@+id/theme_group"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="vertical">
+
+                <RadioButton
+                    android:id="@+id/theme_oneui"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:text="@string/theme_choice_oneui"
+                    android:textColor="@color/foreground"
+                    android:textSize="15sp" />
+
+                <RadioButton
+                    android:id="@+id/theme_system"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:text="@string/theme_choice_system"
+                    android:textColor="@color/foreground"
+                    android:textSize="15sp" />
+
+                <RadioButton
+                    android:id="@+id/theme_stephany"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:text="@string/theme_choice_stephany"
+                    android:textColor="@color/foreground"
+                    android:textSize="15sp" />
+
+                <RadioButton
+                    android:id="@+id/theme_custom"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:text="@string/theme_choice_custom"
+                    android:textColor="@color/foreground"
+                    android:textSize="15sp" />
+            </RadioGroup>
+
+            <LinearLayout
+                android:id="@+id/custom_section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/hue_label"
+                    android:textColor="@color/foreground"
+                    android:textSize="15sp" />
+
+                <SeekBar
+                    android:id="@+id/hue_seek"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:max="359" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="@string/saturation_label"
+                    android:textColor="@color/foreground"
+                    android:textSize="15sp" />
+
+                <SeekBar
+                    android:id="@+id/sat_seek"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:max="100" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="14dp"
+                android:background="@color/divider" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:text="@string/transparency_label"
+                android:textColor="@color/foreground"
+                android:textSize="15sp" />
+
+            <SeekBar
+                android:id="@+id/transparency_seek"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="90" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="14dp"
+                android:background="@color/divider" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical"
+                android:minHeight="52dp"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/change_shortcut"
+                        android:textColor="@color/foreground"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/customize_shortcut_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/secondary"
+                        android:textSize="13sp" />
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/change_shortcut_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/change" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <Button
+        android:id="@+id/done_button"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/bg_button_primary"
+        android:text="@string/done"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp" />
+</LinearLayout>

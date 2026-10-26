@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The ask page, modeled on the One UI 9 Finder / Google search
+     screens: suggestions fill the viewing area, the search pill is
+     a floating glass bar docked low (spec section 9), keyboard up.
+     Enter sends the text into Muse's composer (ASSIST_QUERY). -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/compose_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/ground"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:id="@+id/compose_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="16dp" />
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/compose_bar"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="12dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="14dp"
+        android:paddingEnd="8dp">
+
+        <ImageView
+            android:id="@+id/compose_logo"
+            android:layout_width="34dp"
+            android:layout_height="24dp"
+            android:contentDescription="@string/muse_logo_desc"
+            android:src="@drawable/ic_muse_m" />
+
+        <EditText
+            android:id="@+id/compose_input"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="10dp"
+            android:layout_weight="1"
+            android:background="@null"
+            android:hint="@string/ask_muse_hint"
+            android:imeOptions="actionSearch"
+            android:importantForAutofill="no"
+            android:inputType="text"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:textColor="@color/foreground"
+            android:textSize="16sp" />
+
+        <ImageView
+            android:id="@+id/compose_shortcut"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:contentDescription="@string/shortcut_desc"
+            android:padding="9dp" />
+    </LinearLayout>
+</LinearLayout>

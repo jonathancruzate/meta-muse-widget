@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 4x1 search-bar widget, modeled on the One UI 9 Finder bar: matte
+     borderless pill, glyph + hint in the viewing line, one action glyph
+     on the right. The pill is a provider-rendered bitmap (iv_pill_bg)
+     so its color and transparency follow the Customize settings.
+     Tapping the bar opens a new Muse thread (compose, keyboard up);
+     the right glyph is the customizable shortcut. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="2dp">
+
+    <ImageView
+        android:id="@+id/iv_pill_bg"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_gravity="center_vertical"
+        android:contentDescription="@null"
+        android:scaleType="fitXY"
+        android:src="@drawable/bg_preview_pill" />
+
+    <LinearLayout
+        android:id="@+id/container_search_bar"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_gravity="center_vertical"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="14dp"
+        android:paddingEnd="10dp">
+
+        <ImageView
+            android:id="@+id/iv_muse_logo"
+            android:layout_width="34dp"
+            android:layout_height="24dp"
+            android:contentDescription="@string/muse_logo_desc"
+            android:src="@drawable/ic_muse_m" />
+
+        <TextView
+            android:id="@+id/tv_search_query"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:singleLine="true"
+            android:text="@string/widget_search_hint"
+            android:textColor="@color/secondary"
+            android:textSize="14sp" />
+
+        <ImageView
+            android:id="@+id/iv_shortcut"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:contentDescription="@string/shortcut_desc"
+            android:padding="9dp"
+            android:src="@drawable/ic_open" />
+    </LinearLayout>
+</FrameLayout>
