@@ -46,6 +46,9 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // App-icon shortcuts land here with a widget://shortcut/*
+        // data URI: route and finish before the hub draws.
+        if (routeShortcut(getIntent())) return;
         setContentView(R.layout.activity_hub);
         groupsBox = findViewById(R.id.hub_groups);
         counter = findViewById(R.id.hub_counter);
@@ -168,6 +171,24 @@ public class MainActivity extends Activity {
     }
 
     /** One UI spec: dialogs rise from the bottom of the screen. */
+    /** App-icon shortcut routing (see res/xml/shortcuts.xml). */
+    private boolean routeShortcut(android.content.Intent intent) {
+        android.net.Uri data = intent != null ? intent.getData() : null;
+        if (data == null || !"widget".equals(data.getScheme())) return false;
+        String uri = data.toString();
+        if (uri.endsWith("/ask")) {
+            startActivity(new android.content.Intent(this, ComposeActivity.class));
+        } else if (uri.endsWith("/new")) {
+            Router.dispatch(this, UriCatalog.MODE_ASSIST, null, null);
+        } else if (uri.endsWith("/customize")) {
+            startActivity(new android.content.Intent(this, WidgetCustomizeActivity.class));
+        } else {
+            return false;
+        }
+        finish();
+        return true;
+    }
+
     static void toBottom(AlertDialog dialog) {
         android.view.Window w = dialog.getWindow();
         if (w == null) return;

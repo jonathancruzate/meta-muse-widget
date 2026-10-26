@@ -11,7 +11,7 @@ import java.util.List;
  * 4x2 focus-block grid: the first 8 catalog entries flagged for the
  * grid. The theme color touches only the icons (header logo + cell
  * glyphs) — card and cell backgrounds always stay the One UI spec
- * styling (scope rule: theme color touches icons only).
+ * styling (Jonathan's scope rule, 2026-10-26).
  */
 public class GridWidgetProvider extends AppWidgetProvider {
 
@@ -28,8 +28,8 @@ public class GridWidgetProvider extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager manager, int[] appWidgetIds) {
         List<UriCatalog.Entry> cells = UriCatalog.gridEntries();
-        int accent = BarStyle.accent(context);
         for (int id : appWidgetIds) {
+            int accent = BarStyle.accent(context, id);
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_grid);
             views.setInt(R.id.iv_grid_logo, "setColorFilter", accent);
             for (int i = 0; i < CELL_IDS.length && i < cells.size(); i++) {

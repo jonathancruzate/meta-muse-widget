@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Long-press app-icon shortcuts. They target MainActivity with
+     a widget://shortcut/* data URI; MainActivity routes and
+     finishes before its UI draws. Muse ships no app shortcuts of
+     its own (checked against its manifest) — no duplication. -->
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="ask"
+        android:enabled="true"
+        android:icon="@drawable/ic_assistant"
+        android:shortcutShortLabel="@string/ask_title">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.samsung.oneui9.metamusewidget"
+            android:targetClass="com.samsung.oneui9.metamusewidget.MainActivity"
+            android:data="widget://shortcut/ask" />
+        <categories android:name="android.shortcut.conversation" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="new"
+        android:enabled="true"
+        android:icon="@drawable/ic_plus"
+        android:shortcutShortLabel="@string/sc_new">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.samsung.oneui9.metamusewidget"
+            android:targetClass="com.samsung.oneui9.metamusewidget.MainActivity"
+            android:data="widget://shortcut/new" />
+        <categories android:name="android.shortcut.conversation" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="customize"
+        android:enabled="true"
+        android:icon="@drawable/ic_palette"
+        android:shortcutShortLabel="@string/customize_row">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.samsung.oneui9.metamusewidget"
+            android:targetClass="com.samsung.oneui9.metamusewidget.MainActivity"
+            android:data="widget://shortcut/customize" />
+        <categories android:name="android.shortcut.conversation" />
+    </shortcut>
+</shortcuts>

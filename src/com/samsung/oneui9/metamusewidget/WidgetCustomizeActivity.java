@@ -59,7 +59,7 @@ public class WidgetCustomizeActivity extends Activity {
         customSection = findViewById(R.id.custom_section);
         themeGroup = findViewById(R.id.theme_group);
 
-        String mode = WidgetPrefs.themeMode(this);
+        String mode = WidgetPrefs.themeMode(this, widgetId);
         binding = true;
         themeGroup.check(WidgetPrefs.THEME_SYSTEM.equals(mode) ? R.id.theme_system
                 : WidgetPrefs.THEME_STEPHANY.equals(mode) ? R.id.theme_stephany
@@ -74,39 +74,39 @@ public class WidgetCustomizeActivity extends Activity {
                         : checkedId == R.id.theme_stephany ? WidgetPrefs.THEME_STEPHANY
                         : checkedId == R.id.theme_custom ? WidgetPrefs.THEME_CUSTOM
                         : WidgetPrefs.THEME_ONEUI;
-                WidgetPrefs.setTheme(WidgetCustomizeActivity.this, m);
+                WidgetPrefs.setTheme(WidgetCustomizeActivity.this, widgetId, m);
                 changed();
             }
         });
 
         SeekBar hue = findViewById(R.id.hue_seek);
-        hue.setProgress(WidgetPrefs.customHue(this));
+        hue.setProgress(WidgetPrefs.customHue(this, widgetId));
         hue.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override public void onProgressChanged(SeekBar bar, int progress, boolean fromUser) {
                 if (!fromUser) return;
-                WidgetPrefs.setCustomHue(WidgetCustomizeActivity.this, progress);
+                WidgetPrefs.setCustomHue(WidgetCustomizeActivity.this, widgetId, progress);
                 changed();
             }
             @Override public void onStartTrackingTouch(SeekBar bar) {}
             @Override public void onStopTrackingTouch(SeekBar bar) {}
         });
         SeekBar sat = findViewById(R.id.sat_seek);
-        sat.setProgress(WidgetPrefs.customSat(this));
+        sat.setProgress(WidgetPrefs.customSat(this, widgetId));
         sat.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override public void onProgressChanged(SeekBar bar, int progress, boolean fromUser) {
                 if (!fromUser) return;
-                WidgetPrefs.setCustomSat(WidgetCustomizeActivity.this, progress);
+                WidgetPrefs.setCustomSat(WidgetCustomizeActivity.this, widgetId, progress);
                 changed();
             }
             @Override public void onStartTrackingTouch(SeekBar bar) {}
             @Override public void onStopTrackingTouch(SeekBar bar) {}
         });
         SeekBar transparency = findViewById(R.id.transparency_seek);
-        transparency.setProgress(WidgetPrefs.transparency(this));
+        transparency.setProgress(WidgetPrefs.transparency(this, widgetId));
         transparency.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override public void onProgressChanged(SeekBar bar, int progress, boolean fromUser) {
                 if (!fromUser) return;
-                WidgetPrefs.setTransparency(WidgetCustomizeActivity.this, progress);
+                WidgetPrefs.setTransparency(WidgetCustomizeActivity.this, widgetId, progress);
                 changed();
             }
             @Override public void onStartTrackingTouch(SeekBar bar) {}
@@ -136,7 +136,7 @@ public class WidgetCustomizeActivity extends Activity {
     }
 
     private void refreshPreview() {
-        boolean custom = WidgetPrefs.THEME_CUSTOM.equals(WidgetPrefs.themeMode(this));
+        boolean custom = WidgetPrefs.THEME_CUSTOM.equals(WidgetPrefs.themeMode(this, widgetId));
         customSection.setVisibility(custom ? View.VISIBLE : View.GONE);
         // Same rendered pill as the widget itself (wallpaper frost
         // included) — what you tune is what you get.
@@ -145,13 +145,13 @@ public class WidgetCustomizeActivity extends Activity {
                 float d = getResources().getDisplayMetrics().density;
                 int wDp = Math.max(48, Math.round(previewPill.getWidth() / d));
                 previewPill.setImageBitmap(BarStyle.pillBitmap(
-                        WidgetCustomizeActivity.this, wDp, 52));
+                        WidgetCustomizeActivity.this, wDp, 52, widgetId));
             }
         });
-        int accent = BarStyle.accent(this);
+        int accent = BarStyle.accent(this, widgetId);
         previewLogo.setColorFilter(accent);
         previewHint.setTextColor(BarStyle.hintColor(this));
-        String action = WidgetPrefs.shortcutAction(this);
+        String action = WidgetPrefs.shortcutAction(this, widgetId);
         if (WidgetPrefs.SHORTCUT_NONE.equals(action)) {
             previewShortcut.setVisibility(View.GONE);
             shortcutValue.setText(R.string.value_hidden);
@@ -160,7 +160,7 @@ public class WidgetCustomizeActivity extends Activity {
             previewShortcut.setImageResource(WidgetPrefs.SHORTCUT_ASSIST.equals(action)
                     ? R.drawable.ic_assistant : R.drawable.ic_open);
             previewShortcut.setColorFilter(accent);
-            shortcutValue.setText(WidgetPrefs.shortcutActionLabel(this));
+            shortcutValue.setText(WidgetPrefs.shortcutActionLabel(this, widgetId));
         }
     }
 
@@ -174,7 +174,7 @@ public class WidgetCustomizeActivity extends Activity {
         final String[] actions = {
                 WidgetPrefs.SHORTCUT_ASSIST, WidgetPrefs.SHORTCUT_LAUNCH,
                 WidgetPrefs.SHORTCUT_NONE};
-        String current = WidgetPrefs.shortcutAction(this);
+        String current = WidgetPrefs.shortcutAction(this, widgetId);
         int checked = WidgetPrefs.SHORTCUT_LAUNCH.equals(current) ? 1
                 : WidgetPrefs.SHORTCUT_NONE.equals(current) ? 2 : 0;
         android.app.AlertDialog dialog = new android.app.AlertDialog.Builder(this)
@@ -184,7 +184,7 @@ public class WidgetCustomizeActivity extends Activity {
                             @Override
                             public void onClick(android.content.DialogInterface d, int which) {
                                 WidgetPrefs.setShortcutAction(
-                                        WidgetCustomizeActivity.this, actions[which]);
+                                        WidgetCustomizeActivity.this, widgetId, actions[which]);
                                 changed();
                                 d.dismiss();
                             }

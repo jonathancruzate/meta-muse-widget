@@ -22,19 +22,20 @@ public class SearchBarWidgetProvider extends AppWidgetProvider {
 
     @Override
     public void onUpdate(Context context, AppWidgetManager manager, int[] appWidgetIds) {
-        int accent = BarStyle.accent(context);
-        // The right glyph is the shortcut ACTION (assist or open
-        // app); its icon follows the action. Hidden removes it.
-        String action = WidgetPrefs.shortcutAction(context);
-        UriCatalog.Entry shortcut = null;
-        if (WidgetPrefs.SHORTCUT_ASSIST.equals(action)) {
-            shortcut = new UriCatalog.Entry("Widget", "Assistant", Router.ASSIST_URI,
-                    null, null, R.drawable.ic_assistant, false);
-        } else if (WidgetPrefs.SHORTCUT_LAUNCH.equals(action)) {
-            shortcut = new UriCatalog.Entry("Widget", "Open app", null,
-                    null, null, R.drawable.ic_open, false);
-        }
         for (int id : appWidgetIds) {
+            // Per-widget settings (theme, transparency, shortcut),
+            // each falling back to the global value when this
+            // widget was never individually customized.
+            int accent = BarStyle.accent(context, id);
+            String action = WidgetPrefs.shortcutAction(context, id);
+            UriCatalog.Entry shortcut = null;
+            if (WidgetPrefs.SHORTCUT_ASSIST.equals(action)) {
+                shortcut = new UriCatalog.Entry("Widget", "Assistant", Router.ASSIST_URI,
+                        null, null, R.drawable.ic_assistant, false);
+            } else if (WidgetPrefs.SHORTCUT_LAUNCH.equals(action)) {
+                shortcut = new UriCatalog.Entry("Widget", "Open app", null,
+                        null, null, R.drawable.ic_open, false);
+            }
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_search_bar);
             Bundle opts = manager.getAppWidgetOptions(id);
             int wDp = opts.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, 0);
@@ -46,7 +47,7 @@ public class SearchBarWidgetProvider extends AppWidgetProvider {
             // (what this used to do) reads far too thick next to it.
             // The root FrameLayout pads 2dp on every side.
             views.setImageViewBitmap(R.id.iv_pill_bg,
-                    BarStyle.pillBitmap(context, wDp - 4, 52));
+                    BarStyle.pillBitmap(context, wDp - 4, 52, id));
             views.setInt(R.id.iv_muse_logo, "setColorFilter", accent);
             views.setTextColor(R.id.tv_search_query, BarStyle.hintColor(context));
             // Tapping the bar opens this app's ask page (type with
@@ -71,6 +72,12 @@ public class SearchBarWidgetProvider extends AppWidgetProvider {
             }
             manager.updateAppWidget(id, views);
         }
+    }
+
+    @Override
+    public void onDeleted(Context context, int[] appWidgetIds) {
+        for (int id : appWidgetIds) WidgetPrefs.clearWidget(context, id);
+        super.onDeleted(context, appWidgetIds);
     }
 
     @Override

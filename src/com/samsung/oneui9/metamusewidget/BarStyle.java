@@ -13,7 +13,7 @@ import android.os.Build;
  * The search bar's resolved look, shared by the widget provider and
  * the Customize screen's live preview.
  *
- * Scope rule: the theme color affects ONLY
+ * Scope rule (Jonathan, 2026-10-26): the theme color affects ONLY
  * the logo and the shortcut icon — nothing else. The bar itself is
  * always the exact One UI 9 Finder bar, decomposed from One UI Home
  * 18.0.07.59 (see refs/REFS-FINDINGS.md): fill #f2e9e9e9 light /
@@ -37,8 +37,10 @@ public final class BarStyle {
     }
 
     /** Fill color with the Finder alpha and the slider applied. */
-    public static int fill(Context ctx) {
-        int alpha = Math.round(255f * (100 - WidgetPrefs.transparency(ctx)) / 100f);
+    public static int fill(Context ctx) { return fill(ctx, 0); }
+
+    public static int fill(Context ctx, int widgetId) {
+        int alpha = Math.round(255f * (100 - WidgetPrefs.transparency(ctx, widgetId)) / 100f);
         // The real Finder bar is never fully opaque: #f2...... (242/255).
         alpha = Math.round(alpha * 242f / 255f);
         return (alpha << 24) | (baseFill(ctx) & 0x00FFFFFF);
@@ -56,19 +58,23 @@ public final class BarStyle {
      * backdrop-blur; the frosted read comes from gradient + sheen +
      * hairlines, the way the spec's glass layer is drawn).
      */
-    public static int fillTop(Context ctx) {
+    public static int fillTop(Context ctx) { return fillTop(ctx, 0); }
+
+    public static int fillTop(Context ctx, int widgetId) {
         int base = baseFill(ctx);
         float f = isNight(ctx) ? 0.07f : 0.12f;
         int r = Math.round(Color.red(base) + (255 - Color.red(base)) * f);
         int g = Math.round(Color.green(base) + (255 - Color.green(base)) * f);
         int b = Math.round(Color.blue(base) + (255 - Color.blue(base)) * f);
-        int alpha = fill(ctx) >>> 24;
+        int alpha = fill(ctx, widgetId) >>> 24;
         return (alpha << 24) | (r << 16) | (g << 8) | b;
     }
 
     /** Glyph tint — the ONLY thing the theme color touches. */
-    public static int accent(Context ctx) {
-        String mode = WidgetPrefs.themeMode(ctx);
+    public static int accent(Context ctx) { return accent(ctx, 0); }
+
+    public static int accent(Context ctx, int widgetId) {
+        String mode = WidgetPrefs.themeMode(ctx, widgetId);
         boolean night = isNight(ctx);
         if (WidgetPrefs.THEME_SYSTEM.equals(mode)) {
             return Build.VERSION.SDK_INT >= 31
@@ -79,8 +85,8 @@ public final class BarStyle {
             return ctx.getColor(R.color.stephany_accent);
         }
         if (WidgetPrefs.THEME_CUSTOM.equals(mode)) {
-            float sat = Math.min(1f, WidgetPrefs.customSat(ctx) / 100f * 1.15f);
-            float[] hsv = {WidgetPrefs.customHue(ctx), sat, night ? 0.92f : 0.40f};
+            float sat = Math.min(1f, WidgetPrefs.customSat(ctx, widgetId) / 100f * 1.15f);
+            float[] hsv = {WidgetPrefs.customHue(ctx, widgetId), sat, night ? 0.92f : 0.40f};
             return Color.HSVToColor(hsv);
         }
         return ctx.getColor(R.color.primary_dark);
@@ -97,6 +103,10 @@ public final class BarStyle {
      * a slider-driven alpha).
      */
     public static Bitmap pillBitmap(Context ctx, int widthDp, int heightDp) {
+        return pillBitmap(ctx, widthDp, heightDp, 0);
+    }
+
+    public static Bitmap pillBitmap(Context ctx, int widthDp, int heightDp, int widgetId) {
         float density = ctx.getResources().getDisplayMetrics().density;
         int w = Math.max(48, Math.round(widthDp * density));
         int h = Math.max(24, Math.round(heightDp * density));
@@ -119,7 +129,7 @@ public final class BarStyle {
         // composited over the texture at the Finder's real alpha.
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setShader(new android.graphics.LinearGradient(0, 0, 0, h,
-                fillTop(ctx), fill(ctx), android.graphics.Shader.TileMode.CLAMP));
+                fillTop(ctx, widgetId), fill(ctx, widgetId), android.graphics.Shader.TileMode.CLAMP));
         canvas.drawRoundRect(pill, r, r, paint);
         // Sheen: soft white wash over the top half, fading out —
         // light sitting on blurred glass (spec §9, clean blur).

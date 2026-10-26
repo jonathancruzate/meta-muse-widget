@@ -83,15 +83,19 @@ public final class WidgetPrefs {
     public static final String SHORTCUT_LAUNCH = "launch";
     public static final String SHORTCUT_NONE = "none";
 
-    public static String shortcutAction(Context ctx) {
-        if (shortcutHidden(ctx)) return SHORTCUT_NONE;
-        String uri = prefs(ctx).getString(KEY_SHORTCUT_URI, DEFAULT_SHORTCUT_URI);
+    private static String actionFor(String uri, boolean hidden) {
+        if (hidden) return SHORTCUT_NONE;
         if (Router.ASSIST_URI.equals(uri) || "widget://assist".equals(uri)
                 || "hatch://thread/new".equals(uri) || "hatch://chat".equals(uri)
                 || (uri != null && uri.startsWith("hatch://search"))) {
             return SHORTCUT_ASSIST;
         }
         return SHORTCUT_LAUNCH;
+    }
+
+    public static String shortcutAction(Context ctx) {
+        return actionFor(prefs(ctx).getString(KEY_SHORTCUT_URI, DEFAULT_SHORTCUT_URI),
+                shortcutHidden(ctx));
     }
 
     public static void setShortcutAction(Context ctx, String action) {
@@ -137,6 +141,125 @@ public final class WidgetPrefs {
 
     public static boolean shortcutHidden(Context ctx) {
         return prefs(ctx).contains(KEY_SHORTCUT_URI + "_hidden");
+    }
+
+    // ---- Per-widget overrides ----
+    // Configuring a specific widget writes keys suffixed with its
+    // id; every read falls back to the global value when no
+    // override exists, so placed widgets behave exactly as before
+    // until individually customized. id <= 0 (or
+    // INVALID_APPWIDGET_ID) addresses the global value itself.
+
+    private static String k(String base, int id) { return base + "_" + id; }
+
+    public static String themeMode(Context ctx, int id) {
+        if (id > 0 && prefs(ctx).contains(k(KEY_THEME, id))) {
+            return prefs(ctx).getString(k(KEY_THEME, id), THEME_ONEUI);
+        }
+        return themeMode(ctx);
+    }
+
+    public static int customHue(Context ctx, int id) {
+        if (id > 0 && prefs(ctx).contains(k(KEY_CUSTOM_HUE, id))) {
+            return prefs(ctx).getInt(k(KEY_CUSTOM_HUE, id), 205);
+        }
+        return customHue(ctx);
+    }
+
+    public static int customSat(Context ctx, int id) {
+        if (id > 0 && prefs(ctx).contains(k(KEY_CUSTOM_SAT, id))) {
+            return prefs(ctx).getInt(k(KEY_CUSTOM_SAT, id), 70);
+        }
+        return customSat(ctx);
+    }
+
+    public static int transparency(Context ctx, int id) {
+        if (id > 0 && prefs(ctx).contains(k(KEY_TRANSPARENCY, id))) {
+            return prefs(ctx).getInt(k(KEY_TRANSPARENCY, id), 0);
+        }
+        return transparency(ctx);
+    }
+
+    public static boolean shortcutHidden(Context ctx, int id) {
+        if (id > 0) {
+            if (prefs(ctx).contains(k(KEY_SHORTCUT_URI, id) + "_hidden")) return true;
+            if (prefs(ctx).contains(k(KEY_SHORTCUT_URI, id))) return false;
+        }
+        return shortcutHidden(ctx);
+    }
+
+    public static String shortcutAction(Context ctx, int id) {
+        if (id > 0 && (prefs(ctx).contains(k(KEY_SHORTCUT_URI, id))
+                || prefs(ctx).contains(k(KEY_SHORTCUT_URI, id) + "_hidden"))) {
+            return actionFor(prefs(ctx).getString(k(KEY_SHORTCUT_URI, id),
+                    DEFAULT_SHORTCUT_URI), shortcutHidden(ctx, id));
+        }
+        return shortcutAction(ctx);
+    }
+
+    public static String shortcutActionLabel(Context ctx, int id) {
+        String a = shortcutAction(ctx, id);
+        if (SHORTCUT_ASSIST.equals(a)) return "Assistant";
+        if (SHORTCUT_LAUNCH.equals(a)) return "Open app";
+        return "Hidden";
+    }
+
+    public static void setTheme(Context ctx, int id, String mode) {
+        if (id > 0) prefs(ctx).edit().putString(k(KEY_THEME, id), mode).apply();
+        else setTheme(ctx, mode);
+    }
+
+    public static void setCustomHue(Context ctx, int id, int hue) {
+        if (id > 0) prefs(ctx).edit().putInt(k(KEY_CUSTOM_HUE, id), hue).apply();
+        else setCustomHue(ctx, hue);
+    }
+
+    public static void setCustomSat(Context ctx, int id, int sat) {
+        if (id > 0) prefs(ctx).edit().putInt(k(KEY_CUSTOM_SAT, id), sat).apply();
+        else setCustomSat(ctx, sat);
+    }
+
+    public static void setTransparency(Context ctx, int id, int value) {
+        if (id > 0) prefs(ctx).edit().putInt(k(KEY_TRANSPARENCY, id), value).apply();
+        else setTransparency(ctx, value);
+    }
+
+    public static void setShortcut(Context ctx, int id, String uri, String label) {
+        if (id <= 0) { setShortcut(ctx, uri, label); return; }
+        SharedPreferences.Editor ed = prefs(ctx).edit();
+        if (uri == null) {
+            ed.remove(k(KEY_SHORTCUT_URI, id)).remove(k(KEY_SHORTCUT_LABEL, id));
+            ed.putString(k(KEY_SHORTCUT_URI, id) + "_hidden", "1");
+        } else {
+            ed.putString(k(KEY_SHORTCUT_URI, id), uri);
+            ed.putString(k(KEY_SHORTCUT_LABEL, id), label != null ? label : uri);
+            ed.remove(k(KEY_SHORTCUT_URI, id) + "_hidden");
+        }
+        ed.apply();
+    }
+
+    public static void setShortcutAction(Context ctx, int id, String action) {
+        if (SHORTCUT_NONE.equals(action)) {
+            setShortcut(ctx, id, null, null);
+        } else if (SHORTCUT_ASSIST.equals(action)) {
+            setShortcut(ctx, id, "widget://assist", "Assistant");
+        } else {
+            setShortcut(ctx, id, "widget://launch", "Open app");
+        }
+    }
+
+    /** Drop a removed widget's overrides. */
+    public static void clearWidget(Context ctx, int id) {
+        if (id <= 0) return;
+        prefs(ctx).edit()
+                .remove(k(KEY_THEME, id))
+                .remove(k(KEY_CUSTOM_HUE, id))
+                .remove(k(KEY_CUSTOM_SAT, id))
+                .remove(k(KEY_TRANSPARENCY, id))
+                .remove(k(KEY_SHORTCUT_URI, id))
+                .remove(k(KEY_SHORTCUT_LABEL, id))
+                .remove(k(KEY_SHORTCUT_URI, id) + "_hidden")
+                .apply();
     }
 
     /** Re-render every placed widget after a settings change. */
