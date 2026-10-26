@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Meta Muse Widget</string>
-    <string name="widget_search_name">One UI 9 Meta Muse Search Bar</string>
-    <string name="widget_grid_name">One UI 9 Meta Muse Shortcuts</string>
+    <string name="app_name">Muse Widget</string>
+    <string name="widget_search_name">Muse Widget Search Bar</string>
+    <string name="widget_grid_name">Muse Widget Shortcuts</string>
     <string name="hub_title">Muse</string>
     <string name="hub_subtitle">Every destination in Muse from Meta, one tap away</string>
     <string name="search_hint">Search destinations</string>

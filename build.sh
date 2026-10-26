@@ -34,7 +34,7 @@ echo "== aapt2 link =="
   --manifest AndroidManifest.xml \
   --java build/gen \
   --min-sdk-version 24 --target-sdk-version 35 \
-  --version-code 20 --version-name "4.3.0" \
+  --version-code 21 --version-name "4.3.1" \
   build/res.zip
 
 echo "== javac =="
@@ -51,8 +51,8 @@ echo "== package dex =="
 echo "== zipalign + sign =="
 "$BT/zipalign" -f 4 build/unsigned.apk build/aligned.apk
 "$BT/apksigner" sign --ks "$KS" --ks-pass "pass:$PASS" --key-pass "pass:$PASS" \
-  --out OneUI9-Meta-Muse-Widget-4.3.0.apk build/aligned.apk
+  --out Muse-Widget-4.3.1.apk build/aligned.apk
 
 echo "== verify =="
-"$BT/apksigner" verify --print-certs OneUI9-Meta-Muse-Widget-4.3.0.apk
-ls -lh OneUI9-Meta-Muse-Widget-4.3.0.apk
+"$BT/apksigner" verify --print-certs Muse-Widget-4.3.1.apk
+ls -lh Muse-Widget-4.3.1.apk
