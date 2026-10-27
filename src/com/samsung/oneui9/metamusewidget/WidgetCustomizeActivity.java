@@ -19,8 +19,9 @@ import java.util.List;
 
 /**
  * The Customize screen, modeled on the Google search widget's:
- * a live preview, theme presets (One UI / System palette / Stephany
- * / Custom), Hue and Saturation sliders for the Custom theme, a
+ * a live preview, theme presets (One UI / System palette / Custom,
+ * plus the hidden Stephany option — five taps on the preview pill
+ * unlock it), Hue and Saturation sliders for the Custom theme, a
  * Transparency slider for the bar, and the shortcut picker. Every
  * change saves immediately, re-renders the placed widgets, and
  * updates the preview — the way Google's screen behaves.
@@ -40,6 +41,8 @@ public class WidgetCustomizeActivity extends Activity {
     private View customSection;
     private RadioGroup themeGroup;
     private boolean binding;
+    private int previewTaps;
+    private long previewTapWindowStart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +63,33 @@ public class WidgetCustomizeActivity extends Activity {
         themeGroup = findViewById(R.id.theme_group);
 
         String mode = WidgetPrefs.themeMode(this, widgetId);
+        // The Stephany theme is a hidden option: its radio stays
+        // gone until unlocked — tapping the preview pill five times
+        // unlocks it — or while Stephany is the active theme.
+        final android.widget.RadioButton stephanyRadio = findViewById(R.id.theme_stephany);
+        if (WidgetPrefs.stephanyUnlocked(this)
+                || WidgetPrefs.THEME_STEPHANY.equals(mode)) {
+            WidgetPrefs.setStephanyUnlocked(this, true);
+            stephanyRadio.setVisibility(View.VISIBLE);
+        }
+        previewPill.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) {
+                if (stephanyRadio.getVisibility() == View.VISIBLE) return;
+                long nowTap = System.currentTimeMillis();
+                if (nowTap - previewTapWindowStart > 3000) {
+                    previewTaps = 0;
+                    previewTapWindowStart = nowTap;
+                }
+                previewTaps++;
+                if (previewTaps >= 5) {
+                    WidgetPrefs.setStephanyUnlocked(WidgetCustomizeActivity.this, true);
+                    stephanyRadio.setVisibility(View.VISIBLE);
+                    android.widget.Toast.makeText(WidgetCustomizeActivity.this,
+                            R.string.stephany_unlocked,
+                            android.widget.Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
         binding = true;
         themeGroup.check(WidgetPrefs.THEME_SYSTEM.equals(mode) ? R.id.theme_system
                 : WidgetPrefs.THEME_STEPHANY.equals(mode) ? R.id.theme_stephany

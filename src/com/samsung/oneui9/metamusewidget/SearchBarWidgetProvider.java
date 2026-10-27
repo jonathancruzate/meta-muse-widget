@@ -16,7 +16,8 @@ import android.widget.RemoteViews;
  * bar opens a new Muse thread, the compose surface, so the keyboard
  * comes up ready to type. The right glyph is the customizable
  * shortcut (its icon mutates to match the destination) and can be
- * hidden entirely.
+ * hidden entirely. Tapping the Muse logo on the left just opens
+ * the Muse app.
  */
 public class SearchBarWidgetProvider extends AppWidgetProvider {
 
@@ -60,6 +61,14 @@ public class SearchBarWidgetProvider extends AppWidgetProvider {
                     android.app.PendingIntent.getActivity(context, 1000 + id, compose,
                             android.app.PendingIntent.FLAG_UPDATE_CURRENT
                                     | android.app.PendingIntent.FLAG_IMMUTABLE));
+            // The logo is its own target (a transparent hit view over
+            // the glyph): tapping it just opens the Muse app — a
+            // plain launch, no ask page.
+            UriCatalog.Entry openApp = new UriCatalog.Entry("Widget", "Open Muse",
+                    null, null, null, R.drawable.ic_open, false);
+            views.setContentDescription(R.id.iv_logo_hit, openApp.label);
+            views.setOnClickPendingIntent(R.id.iv_logo_hit,
+                    Router.routerPendingIntent(context, openApp, 3000 + id));
             if (shortcut != null) {
                 views.setViewVisibility(R.id.iv_shortcut, View.VISIBLE);
                 views.setImageViewResource(R.id.iv_shortcut, shortcut.icon);

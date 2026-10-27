@@ -111,18 +111,27 @@ public class MainActivity extends Activity {
     }
 
     private void showThemeDialog() {
-        final String[] choices = {
-                getString(R.string.theme_choice_oneui),
-                getString(R.string.theme_choice_system),
-                getString(R.string.theme_choice_stephany),
-                getString(R.string.theme_choice_custom)};
-        final String[] modes = {
-                WidgetPrefs.THEME_ONEUI, WidgetPrefs.THEME_SYSTEM,
-                WidgetPrefs.THEME_STEPHANY, WidgetPrefs.THEME_CUSTOM};
         String mode = WidgetPrefs.themeMode(this);
-        int current = WidgetPrefs.THEME_SYSTEM.equals(mode) ? 1
-                : WidgetPrefs.THEME_STEPHANY.equals(mode) ? 2
-                : WidgetPrefs.THEME_CUSTOM.equals(mode) ? 3 : 0;
+        // Stephany is a hidden option: it joins the list only once
+        // unlocked (in Customize), or while it is the active theme.
+        boolean showStephany = WidgetPrefs.stephanyUnlocked(this)
+                || WidgetPrefs.THEME_STEPHANY.equals(mode);
+        java.util.ArrayList<String> choiceList = new java.util.ArrayList<String>();
+        java.util.ArrayList<String> modeList = new java.util.ArrayList<String>();
+        choiceList.add(getString(R.string.theme_choice_oneui));
+        modeList.add(WidgetPrefs.THEME_ONEUI);
+        choiceList.add(getString(R.string.theme_choice_system));
+        modeList.add(WidgetPrefs.THEME_SYSTEM);
+        if (showStephany) {
+            choiceList.add(getString(R.string.theme_choice_stephany));
+            modeList.add(WidgetPrefs.THEME_STEPHANY);
+        }
+        choiceList.add(getString(R.string.theme_choice_custom));
+        modeList.add(WidgetPrefs.THEME_CUSTOM);
+        final String[] choices = choiceList.toArray(new String[0]);
+        final String[] modes = modeList.toArray(new String[0]);
+        int current = modeList.indexOf(mode);
+        if (current < 0) current = 0;
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.theme_dialog_title)
                 .setSingleChoiceItems(choices, current, new DialogInterface.OnClickListener() {

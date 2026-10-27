@@ -20,6 +20,7 @@
     <string name="theme_choice_stephany">Stephany (muted pink)</string>
     <string name="theme_custom">Custom</string>
     <string name="theme_choice_custom">Custom (your own color)</string>
+    <string name="stephany_unlocked">Stephany theme unlocked</string>
     <string name="customize_title">Customize</string>
     <string name="customize_row">Customize widget</string>
     <string name="customize_row_hint">Preview, color, transparency</string>
@@ -40,6 +41,7 @@
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="muse_logo_desc">Muse logo</string>
+    <string name="logo_open_app_desc">Open Muse</string>
     <string name="not_found">Muse from Meta (com.facebook.aura) not found on device</string>
     <string name="counter_template">%1$d destinations</string>
     <string name="no_results">No matching destination</string>

@@ -47,6 +47,18 @@ public final class WidgetPrefs {
         prefs(ctx).edit().putString(KEY_THEME, mode).apply();
     }
 
+    private static final String KEY_STEPHANY_UNLOCKED = "stephany_unlocked";
+
+    /** The Stephany theme is a hidden option: the pickers show it
+     * only once it has been unlocked (or while it is active). */
+    public static boolean stephanyUnlocked(Context ctx) {
+        return prefs(ctx).getBoolean(KEY_STEPHANY_UNLOCKED, false);
+    }
+
+    public static void setStephanyUnlocked(Context ctx, boolean v) {
+        prefs(ctx).edit().putBoolean(KEY_STEPHANY_UNLOCKED, v).apply();
+    }
+
     /** Custom-theme hue, 0-359 (default: One UI blue family). */
     public static int customHue(Context ctx) {
         return prefs(ctx).getInt(KEY_CUSTOM_HUE, 205);

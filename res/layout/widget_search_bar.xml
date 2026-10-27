@@ -4,7 +4,8 @@
      on the right. The pill is a provider-rendered bitmap (iv_pill_bg)
      so its color and transparency follow the Customize settings.
      Tapping the bar opens a new Muse thread (compose, keyboard up);
-     the right glyph is the customizable shortcut. -->
+     the right glyph is the customizable shortcut; tapping the Muse
+     logo on the left just opens the Muse app (see iv_logo_hit). -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/widget_root"
     android:layout_width="match_parent"
@@ -57,4 +58,16 @@
             android:padding="9dp"
             android:src="@drawable/ic_open" />
     </LinearLayout>
+
+    <!-- Transparent hit target over the Muse logo: tapping the logo
+         just opens the Muse app. Sized generously (52x48dp) around
+         the 34x24dp glyph so it is easy to hit, and it stops short of
+         the hint text, so the bar's geometry does not change. -->
+    <View
+        android:id="@+id/iv_logo_hit"
+        android:layout_width="52dp"
+        android:layout_height="48dp"
+        android:layout_gravity="start|center_vertical"
+        android:layout_marginStart="7dp"
+        android:contentDescription="@string/logo_open_app_desc" />
 </FrameLayout>

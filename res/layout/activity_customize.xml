@@ -133,12 +133,16 @@
                     android:textColor="@color/foreground"
                     android:textSize="15sp" />
 
+                <!-- Hidden option: revealed by the unlock gesture in
+                     WidgetCustomizeActivity (or while it is the
+                     active theme). -->
                 <RadioButton
                     android:id="@+id/theme_stephany"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:minHeight="48dp"
                     android:text="@string/theme_choice_stephany"
+                    android:visibility="gone"
                     android:textColor="@color/foreground"
                     android:textSize="15sp" />
 
