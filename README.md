@@ -1,11 +1,18 @@
-# One UI 9 Meta Muse Widget
+# Muse Widget
 
 Home-screen widgets and a companion app for **Muse from Meta**
-(`com.facebook.aura`) on Samsung Galaxy devices, styled to match
-Samsung's One UI 9 Finder search bar pixel-for-pixel — the exact
-values were recovered by decompiling One UI Home 18.0.07.59
-(fill `#F2E9E9E9` light / `#F23D3D3D` dark, 52dp pill, 32dp
-radius, 0.5dp outline, 14sp hint).
+(`com.facebook.aura`) on Samsung Galaxy devices, with two
+search-bar styles — each a faithful port of its platform's bar,
+from values recovered by decompiling the real launchers:
+
+- **One UI** — Samsung's One UI 9 Finder bar, from One UI Home
+  18.0.07.59 (fill `#F2E9E9E9` light / `#F23D3D3D` dark, 52dp
+  pill, 32dp radius, 0.5dp outline, 14sp hint), with a
+  wallpaper-frost glass treatment.
+- **Pixel (Material You)** — the Pixel Launcher 17 QSB: a
+  stadium plate filled with the framework's dynamic
+  `surfaceContainerLow`, soft shadow, untinted logo, and the
+  shortcut in a filled circle.
 
 ## Widgets
 

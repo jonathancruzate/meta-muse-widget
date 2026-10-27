@@ -103,6 +103,41 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:text="@string/bar_style_section"
+                android:textColor="@color/foreground"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <RadioGroup
+                android:id="@+id/barstyle_group"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="vertical">
+
+                <RadioButton
+                    android:id="@+id/barstyle_oneui"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:text="@string/barstyle_choice_oneui"
+                    android:textColor="@color/foreground"
+                    android:textSize="15sp" />
+
+                <RadioButton
+                    android:id="@+id/barstyle_pixel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:text="@string/barstyle_choice_pixel"
+                    android:textColor="@color/foreground"
+                    android:textSize="15sp" />
+            </RadioGroup>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
                 android:text="@string/theme_section"
                 android:textColor="@color/foreground"
                 android:textSize="16sp"

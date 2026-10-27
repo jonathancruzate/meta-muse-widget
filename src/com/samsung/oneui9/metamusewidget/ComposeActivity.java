@@ -77,19 +77,30 @@ public class ComposeActivity extends Activity {
         input = findViewById(R.id.compose_input);
         list = findViewById(R.id.compose_list);
 
-        // The bar is the widget's own pill: same glass, same accent.
+        // The bar is the widget's own pill, in the chosen bar
+        // style: One UI glass, or the Pixel stadium plate.
         LinearLayout bar = findViewById(R.id.compose_bar);
-        GradientDrawable pill = new GradientDrawable(
-                GradientDrawable.Orientation.TOP_BOTTOM,
-                new int[]{BarStyle.fillTop(this), BarStyle.fill(this)});
-        pill.setShape(GradientDrawable.RECTANGLE);
-        pill.setCornerRadius(100f * getResources().getDisplayMetrics().density);
-        pill.setStroke(Math.max(1, Math.round(0.5f
-                * getResources().getDisplayMetrics().density)), BarStyle.outlineColor(this));
-        bar.setBackground(pill);
+        boolean pixel = BarStyle.isPixel(this, 0);
+        if (pixel) {
+            GradientDrawable solid = new GradientDrawable();
+            solid.setShape(GradientDrawable.RECTANGLE);
+            solid.setCornerRadius(100f * getResources().getDisplayMetrics().density);
+            solid.setColor(BarStyle.pixelFill(this, 0));
+            bar.setBackground(solid);
+        } else {
+            GradientDrawable pill = new GradientDrawable(
+                    GradientDrawable.Orientation.TOP_BOTTOM,
+                    new int[]{BarStyle.fillTop(this), BarStyle.fill(this)});
+            pill.setShape(GradientDrawable.RECTANGLE);
+            pill.setCornerRadius(100f * getResources().getDisplayMetrics().density);
+            pill.setStroke(Math.max(1, Math.round(0.5f
+                    * getResources().getDisplayMetrics().density)), BarStyle.outlineColor(this));
+            bar.setBackground(pill);
+        }
         ImageView logo = findViewById(R.id.compose_logo);
-        logo.setColorFilter(BarStyle.accent(this));
-        input.setHintTextColor(BarStyle.hintColor(this));
+        if (pixel) logo.clearColorFilter();
+        else logo.setColorFilter(BarStyle.accent(this));
+        input.setHintTextColor(pixel ? BarStyle.pixelHint(this) : BarStyle.hintColor(this));
 
         // The shortcut glyph mirrors the widget bar's right button.
         ImageView shortcut = findViewById(R.id.compose_shortcut);

@@ -26,6 +26,10 @@ public final class WidgetPrefs {
     public static final String THEME_SYSTEM = "system";
     public static final String THEME_STEPHANY = "stephany";
     public static final String THEME_CUSTOM = "custom";
+
+    private static final String KEY_BAR_STYLE = "bar_style";
+    public static final String BAR_STYLE_ONEUI = "oneui";
+    public static final String BAR_STYLE_PIXEL = "pixel";
     public static final String DEFAULT_SHORTCUT_URI = "hatch://search";
     public static final String DEFAULT_SHORTCUT_LABEL = "Search";
 
@@ -48,6 +52,16 @@ public final class WidgetPrefs {
     }
 
     private static final String KEY_STEPHANY_UNLOCKED = "stephany_unlocked";
+
+    /** Bar style: the One UI (Finder) bar or the Pixel (Material
+     * You) bar — independent of the color theme. */
+    public static String barStyle(Context ctx) {
+        return prefs(ctx).getString(KEY_BAR_STYLE, BAR_STYLE_ONEUI);
+    }
+
+    public static void setBarStyle(Context ctx, String style) {
+        prefs(ctx).edit().putString(KEY_BAR_STYLE, style).apply();
+    }
 
     /** The Stephany theme is a hidden option: the pickers show it
      * only once it has been unlocked (or while it is active). */
@@ -171,6 +185,13 @@ public final class WidgetPrefs {
         return themeMode(ctx);
     }
 
+    public static String barStyle(Context ctx, int id) {
+        if (id > 0 && prefs(ctx).contains(k(KEY_BAR_STYLE, id))) {
+            return prefs(ctx).getString(k(KEY_BAR_STYLE, id), BAR_STYLE_ONEUI);
+        }
+        return barStyle(ctx);
+    }
+
     public static int customHue(Context ctx, int id) {
         if (id > 0 && prefs(ctx).contains(k(KEY_CUSTOM_HUE, id))) {
             return prefs(ctx).getInt(k(KEY_CUSTOM_HUE, id), 205);
@@ -221,6 +242,11 @@ public final class WidgetPrefs {
         else setTheme(ctx, mode);
     }
 
+    public static void setBarStyle(Context ctx, int id, String style) {
+        if (id > 0) prefs(ctx).edit().putString(k(KEY_BAR_STYLE, id), style).apply();
+        else setBarStyle(ctx, style);
+    }
+
     public static void setCustomHue(Context ctx, int id, int hue) {
         if (id > 0) prefs(ctx).edit().putInt(k(KEY_CUSTOM_HUE, id), hue).apply();
         else setCustomHue(ctx, hue);
@@ -265,6 +291,7 @@ public final class WidgetPrefs {
         if (id <= 0) return;
         prefs(ctx).edit()
                 .remove(k(KEY_THEME, id))
+                .remove(k(KEY_BAR_STYLE, id))
                 .remove(k(KEY_CUSTOM_HUE, id))
                 .remove(k(KEY_CUSTOM_SAT, id))
                 .remove(k(KEY_TRANSPARENCY, id))

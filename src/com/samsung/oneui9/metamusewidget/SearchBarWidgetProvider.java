@@ -49,8 +49,14 @@ public class SearchBarWidgetProvider extends AppWidgetProvider {
             // The root FrameLayout pads 2dp on every side.
             views.setImageViewBitmap(R.id.iv_pill_bg,
                     BarStyle.pillBitmap(context, wDp - 4, 52, id));
-            views.setInt(R.id.iv_muse_logo, "setColorFilter", accent);
-            views.setTextColor(R.id.tv_search_query, BarStyle.hintColor(context));
+            // In the Pixel bar style the logo sits untinted, the
+            // way Pixel's multicolor G does; the One UI style keeps
+            // the theme tint. (Fresh RemoteViews: skipping the call
+            // leaves the glyph in its native colors.)
+            if (!BarStyle.isPixel(context, id)) {
+                views.setInt(R.id.iv_muse_logo, "setColorFilter", accent);
+            }
+            views.setTextColor(R.id.tv_search_query, BarStyle.hintColor(context, id));
             // Tapping the bar opens this app's ask page (type with
             // suggestions; Enter lands the text in Muse's composer).
             android.content.Intent compose = new android.content.Intent(
@@ -71,8 +77,16 @@ public class SearchBarWidgetProvider extends AppWidgetProvider {
                     Router.routerPendingIntent(context, openApp, 3000 + id));
             if (shortcut != null) {
                 views.setViewVisibility(R.id.iv_shortcut, View.VISIBLE);
-                views.setImageViewResource(R.id.iv_shortcut, shortcut.icon);
-                views.setInt(R.id.iv_shortcut, "setColorFilter", accent);
+                if (BarStyle.isPixel(context, id)) {
+                    // Pixel presents the end action as a filled
+                    // circle; the glyph is baked into the bitmap,
+                    // accent tint included.
+                    views.setImageViewBitmap(R.id.iv_shortcut,
+                            BarStyle.shortcutCircleBitmap(context, id, shortcut.icon));
+                } else {
+                    views.setImageViewResource(R.id.iv_shortcut, shortcut.icon);
+                    views.setInt(R.id.iv_shortcut, "setColorFilter", accent);
+                }
                 views.setContentDescription(R.id.iv_shortcut, shortcut.label);
                 views.setOnClickPendingIntent(R.id.iv_shortcut,
                         Router.routerPendingIntent(context, shortcut, 2000 + id));

@@ -40,6 +40,7 @@ public class WidgetCustomizeActivity extends Activity {
     private TextView shortcutValue;
     private View customSection;
     private RadioGroup themeGroup;
+    private RadioGroup barStyleGroup;
     private boolean binding;
     private int previewTaps;
     private long previewTapWindowStart;
@@ -105,6 +106,23 @@ public class WidgetCustomizeActivity extends Activity {
                         : checkedId == R.id.theme_custom ? WidgetPrefs.THEME_CUSTOM
                         : WidgetPrefs.THEME_ONEUI;
                 WidgetPrefs.setTheme(WidgetCustomizeActivity.this, widgetId, m);
+                changed();
+            }
+        });
+
+        barStyleGroup = findViewById(R.id.barstyle_group);
+        binding = true;
+        barStyleGroup.check(WidgetPrefs.BAR_STYLE_PIXEL.equals(
+                WidgetPrefs.barStyle(this, widgetId))
+                ? R.id.barstyle_pixel : R.id.barstyle_oneui);
+        binding = false;
+        barStyleGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (binding) return;
+                WidgetPrefs.setBarStyle(WidgetCustomizeActivity.this, widgetId,
+                        checkedId == R.id.barstyle_pixel
+                                ? WidgetPrefs.BAR_STYLE_PIXEL : WidgetPrefs.BAR_STYLE_ONEUI);
                 changed();
             }
         });
@@ -179,8 +197,10 @@ public class WidgetCustomizeActivity extends Activity {
             }
         });
         int accent = BarStyle.accent(this, widgetId);
-        previewLogo.setColorFilter(accent);
-        previewHint.setTextColor(BarStyle.hintColor(this));
+        boolean pixel = BarStyle.isPixel(this, widgetId);
+        if (pixel) previewLogo.clearColorFilter();
+        else previewLogo.setColorFilter(accent);
+        previewHint.setTextColor(BarStyle.hintColor(this, widgetId));
         String action = WidgetPrefs.shortcutAction(this, widgetId);
         if (WidgetPrefs.SHORTCUT_NONE.equals(action)) {
             previewShortcut.setVisibility(View.GONE);
@@ -190,6 +210,15 @@ public class WidgetCustomizeActivity extends Activity {
             previewShortcut.setImageResource(WidgetPrefs.SHORTCUT_ASSIST.equals(action)
                     ? R.drawable.ic_assistant : R.drawable.ic_open);
             previewShortcut.setColorFilter(accent);
+            if (pixel) {
+                android.graphics.drawable.GradientDrawable circle =
+                        new android.graphics.drawable.GradientDrawable();
+                circle.setShape(android.graphics.drawable.GradientDrawable.OVAL);
+                circle.setColor(BarStyle.pixelCircleFill(this));
+                previewShortcut.setBackground(circle);
+            } else {
+                previewShortcut.setBackground(null);
+            }
             shortcutValue.setText(WidgetPrefs.shortcutActionLabel(this, widgetId));
         }
     }

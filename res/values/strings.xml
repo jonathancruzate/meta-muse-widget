@@ -26,6 +26,9 @@
     <string name="customize_row_hint">Preview, color, transparency</string>
     <string name="preview">Preview</string>
     <string name="theme_section">Theme</string>
+    <string name="bar_style_section">Bar style</string>
+    <string name="barstyle_choice_oneui">One UI (Samsung Finder bar)</string>
+    <string name="barstyle_choice_pixel">Pixel (Material You bar)</string>
     <string name="hue_label">Hue</string>
     <string name="saturation_label">Saturation</string>
     <string name="transparency_label">Transparency</string>
