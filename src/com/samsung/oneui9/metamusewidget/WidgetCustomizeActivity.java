@@ -57,6 +57,9 @@ public class WidgetCustomizeActivity extends Activity {
         // App-icon shortcuts land here with a widget://shortcut/*
         // data URI: route and finish before the page draws.
         if (routeShortcut(getIntent())) return;
+        // The launcher label is the app name ("Muse Widget"); the
+        // page itself is still titled Customize.
+        setTitle(R.string.customize_title);
         setResult(RESULT_CANCELED);
         setContentView(R.layout.activity_customize);
         Intent intent = getIntent();
