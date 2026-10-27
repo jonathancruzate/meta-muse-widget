@@ -198,8 +198,12 @@ public class WidgetCustomizeActivity extends Activity {
         });
         int accent = BarStyle.accent(this, widgetId);
         boolean pixel = BarStyle.isPixel(this, widgetId);
-        if (pixel) previewLogo.clearColorFilter();
-        else previewLogo.setColorFilter(accent);
+        if (pixel) {
+            previewLogo.setImageBitmap(BarStyle.dynamicLogoBitmap(this));
+        } else {
+            previewLogo.setImageResource(R.drawable.ic_muse_m);
+            previewLogo.setColorFilter(accent);
+        }
         previewHint.setTextColor(BarStyle.hintColor(this, widgetId));
         String action = WidgetPrefs.shortcutAction(this, widgetId);
         if (WidgetPrefs.SHORTCUT_NONE.equals(action)) {

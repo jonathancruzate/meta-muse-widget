@@ -98,7 +98,7 @@ public class ComposeActivity extends Activity {
             bar.setBackground(pill);
         }
         ImageView logo = findViewById(R.id.compose_logo);
-        if (pixel) logo.clearColorFilter();
+        if (pixel) logo.setImageBitmap(BarStyle.dynamicLogoBitmap(this));
         else logo.setColorFilter(BarStyle.accent(this));
         input.setHintTextColor(pixel ? BarStyle.pixelHint(this) : BarStyle.hintColor(this));
 

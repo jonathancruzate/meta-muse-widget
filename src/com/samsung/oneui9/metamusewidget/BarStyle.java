@@ -24,8 +24,10 @@ import android.os.Build;
  * (#33000000 / #26ffffff), hint #99000000 / #99ffffff. Pixel = the
  * Pixel Launcher 17 QSB (refs/PIXEL-FINDINGS.md): a stadium plate
  * of the framework's dynamic surfaceContainerLow with a soft
- * shadow, the logo untinted, the shortcut in a filled circle. In
- * Pixel style the accent theme tints only the shortcut glyph.
+ * shadow, the shortcut in a filled circle — and the logo as a
+ * sweep gradient of framework accent tones, Pixel's "dynamic G"
+ * treatment (see dynamicLogoBitmap). In Pixel style the accent
+ * theme tints only the shortcut glyph.
  * The transparency slider still fades the whole pill (an opacity
  * control, not a color). Light/dark follows the device.
  */
@@ -148,6 +150,116 @@ public final class BarStyle {
     /** Hint color for the effective bar style. */
     public static int hintColor(Context ctx, int widgetId) {
         return isPixel(ctx, widgetId) ? pixelHint(ctx) : hintColor(ctx);
+    }
+
+    // ---- The dynamic logo (Pixel's "Super G" treatment) ----
+    // REA + agy dig, refs/REA-G-COLOR-ENGINE.md: Pixel's dynamic G
+    // is a 17-stop SWEEP gradient whose stops are 8 colors bound to
+    // framework dynamic tones (system_accent1/2/3) with lStar
+    // lightness tweaks, swapped in for the fixed brand-color G when
+    // Themed Icons is on. The launcher runs no engine of its own —
+    // it consumes the framework scheme. Ours does the same: same
+    // stops, same sources, swept around the M's own center and
+    // clipped to the glyph's alpha.
+
+    private static final float[] SWEEP_POSITIONS = {
+            0f, 0.080f, 0.150f, 0.220f, 0.280f, 0.350f, 0.375f, 0.450f,
+            0.500f, 0.550f, 0.575f, 0.635f, 0.680f, 0.780f, 0.880f,
+            0.920f, 1f};
+
+    private static int sysColorOr(Context ctx, String name, int fallback) {
+        int c = systemColor(ctx, name);
+        return c != 0 ? c : fallback;
+    }
+
+    /** sRGB color with its CIE L* (perceptual lightness) replaced —
+     * the framework's android:lStar modifier, applied by hand. */
+    private static int withLStar(int color, double targetL) {
+        double[] rgb = new double[3];
+        int[] ch = {Color.red(color), Color.green(color), Color.blue(color)};
+        for (int i = 0; i < 3; i++) {
+            double c = ch[i] / 255.0;
+            rgb[i] = c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+        }
+        double x = (0.4124 * rgb[0] + 0.3576 * rgb[1] + 0.1805 * rgb[2]) / 0.95047;
+        double y = (0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2]) / 1.0;
+        double z = (0.0193 * rgb[0] + 0.1192 * rgb[1] + 0.9505 * rgb[2]) / 1.08883;
+        double fx = labF(x), fy = labF(y), fz = labF(z);
+        double a = 500 * (fx - fy), b = 200 * (fy - fz);
+        double fy2 = (targetL + 16) / 116.0;
+        double fx2 = fy2 + a / 500.0, fz2 = fy2 - b / 200.0;
+        double xr = labFInv(fx2) * 0.95047, yr = labFInv(fy2), zr = labFInv(fz2) * 1.08883;
+        double[] lin = {
+                3.2406 * xr - 1.5372 * yr - 0.4986 * zr,
+                -0.9689 * xr + 1.8758 * yr + 0.0415 * zr,
+                0.0557 * xr - 0.2040 * yr + 1.0570 * zr};
+        int[] out = new int[3];
+        for (int i = 0; i < 3; i++) {
+            double c = lin[i] <= 0.0031308 ? 12.92 * lin[i]
+                    : 1.055 * Math.pow(lin[i], 1.0 / 2.4) - 0.055;
+            out[i] = Math.max(0, Math.min(255, (int) Math.round(c * 255)));
+        }
+        return Color.rgb(out[0], out[1], out[2]);
+    }
+
+    private static double labF(double t) {
+        return t > 0.008856 ? Math.cbrt(t) : 7.787 * t + 16.0 / 116.0;
+    }
+
+    private static double labFInv(double f) {
+        double f3 = f * f * f;
+        return f3 > 0.008856 ? f3 : (116 * f - 16) / 903.3;
+    }
+
+    /** The 17 sweep stops, in Pixel's order, from the 8 dynamic
+     * role colors (light / night bindings per the REA table). */
+    private static int[] sweepColors(Context ctx) {
+        boolean night = isNight(ctx);
+        int a1_200 = sysColorOr(ctx, "system_accent1_200", 0xFFB0C4F5);
+        int a1_400 = sysColorOr(ctx, "system_accent1_400", 0xFF6B8AFD);
+        int a1_500 = sysColorOr(ctx, "system_accent1_500", 0xFF3B78E8);
+        int a1_600 = sysColorOr(ctx, "system_accent1_600", 0xFF1A5FD7);
+        int a2_10 = sysColorOr(ctx, "system_accent2_10", 0xFFF1F3F4);
+        int a2_300 = sysColorOr(ctx, "system_accent2_300", 0xFFA8C7FA);
+        int a3_100 = sysColorOr(ctx, "system_accent3_100", 0xFFC2E7FF);
+        int a3_400 = sysColorOr(ctx, "system_accent3_400", 0xFF5AB0F0);
+        int primary = night ? a3_100 : a3_400;
+        int primaryTransition = night ? withLStar(a1_400, 65) : a1_500;
+        int secondary = night ? a1_400 : a1_500;
+        int secondaryTransition = night ? withLStar(a1_400, 65) : withLStar(a1_500, 53);
+        int tertiary = night ? withLStar(a2_10, 98) : a2_300;
+        int quatTransitionOne = night ? withLStar(a1_200, 85) : withLStar(a1_600, 50);
+        int quatTransitionTwo = night ? a1_200 : withLStar(a1_600, 45);
+        int quaternary = night ? a1_200 : a1_600;
+        return new int[]{primary, primary, primary, primaryTransition,
+                secondary, secondary, secondaryTransition,
+                tertiary, tertiary, tertiary, tertiary,
+                quatTransitionOne, quatTransitionTwo,
+                quaternary, quaternary, quaternary, primary};
+    }
+
+    /**
+     * The Muse M as Pixel's dynamic G: a sweep gradient of the
+     * framework's dynamic accent tones, clipped to the glyph.
+     * Rendered at 102x72 (34x24dp at 3x); views scale it down.
+     */
+    public static Bitmap dynamicLogoBitmap(Context ctx) {
+        android.graphics.Bitmap mask = android.graphics.BitmapFactory.decodeResource(
+                ctx.getResources(), R.drawable.ic_muse_m);
+        if (mask == null) return null;
+        int w = 102, h = 72;
+        Bitmap scaledMask = Bitmap.createScaledBitmap(mask, w, h, true);
+        Bitmap out = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(out);
+        Paint sweep = new Paint(Paint.ANTI_ALIAS_FLAG);
+        sweep.setShader(new android.graphics.SweepGradient(
+                w / 2f, h / 2f, sweepColors(ctx), SWEEP_POSITIONS));
+        canvas.drawRect(0, 0, w, h, sweep);
+        Paint maskPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        maskPaint.setXfermode(new android.graphics.PorterDuffXfermode(
+                android.graphics.PorterDuff.Mode.DST_IN));
+        canvas.drawBitmap(scaledMask, 0, 0, maskPaint);
+        return out;
     }
 
     /**

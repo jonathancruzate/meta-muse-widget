@@ -49,11 +49,14 @@ public class SearchBarWidgetProvider extends AppWidgetProvider {
             // The root FrameLayout pads 2dp on every side.
             views.setImageViewBitmap(R.id.iv_pill_bg,
                     BarStyle.pillBitmap(context, wDp - 4, 52, id));
-            // In the Pixel bar style the logo sits untinted, the
-            // way Pixel's multicolor G does; the One UI style keeps
-            // the theme tint. (Fresh RemoteViews: skipping the call
-            // leaves the glyph in its native colors.)
-            if (!BarStyle.isPixel(context, id)) {
+            // In the Pixel bar style the logo is Pixel's dynamic
+            // treatment: a sweep gradient of the framework's
+            // accent tones clipped to the glyph (BarStyle). The
+            // One UI style keeps the theme tint.
+            if (BarStyle.isPixel(context, id)) {
+                views.setImageViewBitmap(R.id.iv_muse_logo,
+                        BarStyle.dynamicLogoBitmap(context));
+            } else {
                 views.setInt(R.id.iv_muse_logo, "setColorFilter", accent);
             }
             views.setTextColor(R.id.tv_search_query, BarStyle.hintColor(context, id));
