@@ -26,9 +26,15 @@ import java.util.List;
  * change saves immediately, re-renders the placed widgets, and
  * updates the preview — the way Google's screen behaves.
  *
- * Also registered as the widgets' configure activity, so it opens
- * when a widget is added; Done then returns RESULT_OK for that
- * widget id.
+ * Also registered as the widget's configure activity, so it opens
+ * when the widget is added (and from the long-press pencil);
+ * Done then returns RESULT_OK for that widget id.
+ *
+ * Since v4.5.0 this page IS the app: the launcher opens it in
+ * global scope, the way the Google search widget's app is its
+ * Customize screen. The old catalog hub is gone — Muse gates
+ * its destination URIs by caller signature, so a browsable list
+ * of them was reference material nobody could use.
  */
 public class WidgetCustomizeActivity extends Activity {
 
@@ -48,6 +54,9 @@ public class WidgetCustomizeActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // App-icon shortcuts land here with a widget://shortcut/*
+        // data URI: route and finish before the page draws.
+        if (routeShortcut(getIntent())) return;
         setResult(RESULT_CANCELED);
         setContentView(R.layout.activity_customize);
         Intent intent = getIntent();
@@ -198,7 +207,7 @@ public class WidgetCustomizeActivity extends Activity {
         });
         int accent = BarStyle.accent(this, widgetId);
         boolean pixel = BarStyle.isPixel(this, widgetId);
-        if (pixel) {
+        if (BarStyle.useDynamicLogo(this, widgetId)) {
             previewLogo.setImageBitmap(BarStyle.dynamicLogoBitmap(this));
         } else {
             previewLogo.setImageResource(R.drawable.ic_muse_m);
@@ -254,7 +263,33 @@ public class WidgetCustomizeActivity extends Activity {
                         })
                 .create();
         dialog.show();
-        MainActivity.toBottom(dialog);
+        toBottom(dialog);
+    }
+
+    /** App-icon shortcut routing (see res/xml/shortcuts.xml). */
+    private boolean routeShortcut(Intent intent) {
+        android.net.Uri data = intent != null ? intent.getData() : null;
+        if (data == null || !"widget".equals(data.getScheme())) return false;
+        String uri = data.toString();
+        if (uri.endsWith("/ask")) {
+            startActivity(new Intent(this, ComposeActivity.class));
+        } else if (uri.endsWith("/new")) {
+            Router.dispatch(this, UriCatalog.MODE_ASSIST, null, null);
+        } else {
+            return false;
+        }
+        finish();
+        return true;
+    }
+
+    /** One UI spec: dialogs rise from the bottom of the screen. */
+    static void toBottom(android.app.AlertDialog dialog) {
+        android.view.Window w = dialog.getWindow();
+        if (w == null) return;
+        w.setGravity(android.view.Gravity.BOTTOM);
+        android.view.WindowManager.LayoutParams lp = w.getAttributes();
+        lp.width = android.view.WindowManager.LayoutParams.MATCH_PARENT;
+        w.setAttributes(lp);
     }
 
 }

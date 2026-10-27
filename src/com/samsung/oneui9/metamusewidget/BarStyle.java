@@ -238,6 +238,16 @@ public final class BarStyle {
                 quaternary, quaternary, quaternary, primary};
     }
 
+    /** The dynamic sweep belongs to the System theme (the
+     * framework tones ARE the system palette). Any other theme
+     * tints the glyph with its own accent instead — theming
+     * applies to the bar's left logo in every style (Jonathan,
+     * 2026-10-27). */
+    public static boolean useDynamicLogo(Context ctx, int widgetId) {
+        return isPixel(ctx, widgetId)
+                && WidgetPrefs.THEME_SYSTEM.equals(WidgetPrefs.themeMode(ctx, widgetId));
+    }
+
     /**
      * The Muse M as Pixel's dynamic G: a sweep gradient of the
      * framework's dynamic accent tones, clipped to the glyph.
@@ -299,6 +309,41 @@ public final class BarStyle {
     }
 
     public static Bitmap pillBitmap(Context ctx, int widthDp, int heightDp, int widgetId) {
+        try {
+            return renderPill(ctx, widthDp, heightDp, widgetId);
+        } catch (Throwable t) {
+            // A render failure must never take the widget down
+            // with it (the host shows an error placeholder when an
+            // update dies): fall back to the flat plate.
+            return flatPillBitmap(ctx, widthDp, heightDp, widgetId);
+        }
+    }
+
+    /** The flat plate: the style's fill as a plain stadium, no
+     * wallpaper texture, no shadow. The guaranteed-render path. */
+    public static Bitmap flatPillBitmap(Context ctx, int widthDp, int heightDp, int widgetId) {
+        float density = ctx.getResources().getDisplayMetrics().density;
+        int w = Math.max(48, Math.round(widthDp * density));
+        int h = Math.max(24, Math.round(heightDp * density));
+        Bitmap bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bmp);
+        Paint fillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        fillPaint.setColor(isPixel(ctx, widgetId) ? pixelFill(ctx, widgetId) : fill(ctx, widgetId));
+        canvas.drawRoundRect(new RectF(0, 0, w, h), h / 2f, h / 2f, fillPaint);
+        if (!isPixel(ctx, widgetId)) {
+            float sw = Math.max(1f, 0.5f * density);
+            Paint stroke = new Paint(Paint.ANTI_ALIAS_FLAG);
+            stroke.setStyle(Paint.Style.STROKE);
+            stroke.setStrokeWidth(sw);
+            stroke.setColor(outlineColor(ctx));
+            float inset = sw / 2f;
+            canvas.drawRoundRect(new RectF(inset, inset, w - inset, h - inset),
+                    h / 2f - inset, h / 2f - inset, stroke);
+        }
+        return bmp;
+    }
+
+    private static Bitmap renderPill(Context ctx, int widthDp, int heightDp, int widgetId) {
         float density = ctx.getResources().getDisplayMetrics().density;
         int w = Math.max(48, Math.round(widthDp * density));
         int h = Math.max(24, Math.round(heightDp * density));

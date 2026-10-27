@@ -96,7 +96,7 @@ public final class Router {
                 }
                 break;
             case UriCatalog.MODE_HUB:
-                ctx.startActivity(new Intent(ctx, MainActivity.class)
+                ctx.startActivity(new Intent(ctx, WidgetCustomizeActivity.class)
                         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                 return;
             case UriCatalog.MODE_CUSTOMIZE:

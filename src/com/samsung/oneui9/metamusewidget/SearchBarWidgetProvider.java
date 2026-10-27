@@ -24,6 +24,21 @@ public class SearchBarWidgetProvider extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager manager, int[] appWidgetIds) {
         for (int id : appWidgetIds) {
+            try {
+                updateOne(context, manager, id);
+            } catch (Throwable t) {
+                // A failed render must never leave the host with a
+                // dead widget: fall back to the flat plate with the
+                // same tap targets.
+                try {
+                    manager.updateAppWidget(id, fallbackViews(context, id));
+                } catch (Throwable ignored) {
+                }
+            }
+        }
+    }
+
+    private void updateOne(Context context, AppWidgetManager manager, int id) {
             // Per-widget settings (theme, transparency, shortcut),
             // each falling back to the global value when this
             // widget was never individually customized.
@@ -49,11 +64,12 @@ public class SearchBarWidgetProvider extends AppWidgetProvider {
             // The root FrameLayout pads 2dp on every side.
             views.setImageViewBitmap(R.id.iv_pill_bg,
                     BarStyle.pillBitmap(context, wDp - 4, 52, id));
-            // In the Pixel bar style the logo is Pixel's dynamic
-            // treatment: a sweep gradient of the framework's
-            // accent tones clipped to the glyph (BarStyle). The
-            // One UI style keeps the theme tint.
-            if (BarStyle.isPixel(context, id)) {
+            // The bar's left logo follows the color theme in
+            // every style: the dynamic sweep when the System
+            // theme is in charge of the Pixel bar (the framework
+            // tones are the system palette), the theme's accent
+            // tint otherwise.
+            if (BarStyle.useDynamicLogo(context, id)) {
                 views.setImageViewBitmap(R.id.iv_muse_logo,
                         BarStyle.dynamicLogoBitmap(context));
             } else {
@@ -97,7 +113,29 @@ public class SearchBarWidgetProvider extends AppWidgetProvider {
                 views.setViewVisibility(R.id.iv_shortcut, View.GONE);
             }
             manager.updateAppWidget(id, views);
-        }
+    }
+
+    /** The guaranteed-render fallback: flat plate, themed logo,
+     * the bar and logo tap targets, no shortcut glyph. */
+    private RemoteViews fallbackViews(Context context, int id) {
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_search_bar);
+        views.setImageViewBitmap(R.id.iv_pill_bg, BarStyle.flatPillBitmap(context, 296, 52, id));
+        views.setInt(R.id.iv_muse_logo, "setColorFilter", BarStyle.accent(context, id));
+        views.setTextColor(R.id.tv_search_query, BarStyle.hintColor(context, id));
+        android.content.Intent compose = new android.content.Intent(context, ComposeActivity.class);
+        compose.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK
+                | android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        views.setOnClickPendingIntent(R.id.container_search_bar,
+                android.app.PendingIntent.getActivity(context, 1000 + id, compose,
+                        android.app.PendingIntent.FLAG_UPDATE_CURRENT
+                                | android.app.PendingIntent.FLAG_IMMUTABLE));
+        UriCatalog.Entry openApp = new UriCatalog.Entry("Widget", "Open Muse",
+                null, null, null, R.drawable.ic_open, false);
+        views.setContentDescription(R.id.iv_logo_hit, openApp.label);
+        views.setOnClickPendingIntent(R.id.iv_logo_hit,
+                Router.routerPendingIntent(context, openApp, 3000 + id));
+        views.setViewVisibility(R.id.iv_shortcut, View.GONE);
+        return views;
     }
 
     @Override

@@ -304,7 +304,7 @@ public final class WidgetPrefs {
     /** Re-render every placed widget after a settings change. */
     public static void refreshWidgets(Context ctx) {
         AppWidgetManager manager = AppWidgetManager.getInstance(ctx);
-        Class<?>[] providers = {SearchBarWidgetProvider.class, GridWidgetProvider.class};
+        Class<?>[] providers = {SearchBarWidgetProvider.class};
         for (Class<?> provider : providers) {
             int[] ids = manager.getAppWidgetIds(new ComponentName(ctx, provider));
             if (ids == null || ids.length == 0) continue;

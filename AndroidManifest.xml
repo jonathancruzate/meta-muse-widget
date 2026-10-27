@@ -30,20 +30,6 @@
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="stateVisible|adjustResize" />
 
-        <!-- Hub: the full destination catalog, One UI styled. -->
-        <activity
-            android:name=".MainActivity"
-            android:exported="true"
-            android:label="@string/app_name">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            <meta-data
-                android:name="android.app.shortcuts"
-                android:resource="@xml/shortcuts" />
-        </activity>
-
         <!-- Quick Settings tile: opens the ask page from anywhere. -->
         <service
             android:name=".AskTileService"
@@ -59,16 +45,26 @@
                 android:value="true" />
         </service>
 
-        <!-- Customize: Google-widget-style settings screen (live
-             preview, themes, Custom hue/saturation, transparency,
-             shortcut). Also the widgets' configure activity. -->
+        <!-- The app itself: the Customize settings screen (live
+             preview, bar style, themes, Custom hue/saturation,
+             transparency, shortcut), modeled on the Google search
+             widget's. The launcher opens it in global scope; it is
+             also the widget's configure activity (per-widget scope
+             from the add flow and the long-press pencil). -->
         <activity
             android:name=".WidgetCustomizeActivity"
             android:exported="true"
             android:label="@string/customize_title">
             <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
         </activity>
 
         <!-- Router: fires one catalog URI at Muse, with the fallback chain. -->
@@ -92,17 +88,5 @@
                 android:resource="@xml/widget_info_search" />
         </receiver>
 
-        <!-- 4x2 One UI 9 focus-block shortcut grid widget. -->
-        <receiver
-            android:name=".GridWidgetProvider"
-            android:exported="true"
-            android:label="@string/widget_grid_name">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/widget_info_grid" />
-        </receiver>
     </application>
 </manifest>

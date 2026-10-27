@@ -11,22 +11,28 @@ from values recovered by decompiling the real launchers:
   wallpaper-frost glass treatment.
 - **Pixel (Material You)** — the Pixel Launcher 17 QSB: a
   stadium plate filled with the framework's dynamic
-  `surfaceContainerLow`, soft shadow, untinted logo, and the
-  shortcut in a filled circle.
+  `surfaceContainerLow`, soft shadow, the shortcut in a filled
+  circle, and — under the System theme — the logo rendered as a
+  17-stop sweep of the framework's accent tones, the same
+  mechanism as Pixel's dynamic G (traced in the launcher's
+  code). Any other theme tints the logo with its own accent:
+  theming reaches the logo in both styles.
 
-## Widgets
+## Widget
 
 - **Search bar (4×1)** — the Finder pill, rendered as a bitmap so
   it can carry a real frosted-glass effect: the home-screen
   wallpaper is sampled, blurred, and composited under the tint
   (widgets can't backdrop-blur). Tapping it opens the ask page;
-  the right-hand button is a configurable action whose glyph
-  changes to match.
-- **Action grid (4×2)** — New chat, Assistant, Search, Voice,
-  Open app, Copy link, Destinations, Customize.
-- Both widgets appear in the picker with live previews, and the
-  bar widget is in the searchbox category. Long-press →
-  Settings opens the customize screen.
+  tapping the logo just opens the Muse app; the right-hand
+  button is a configurable action whose glyph changes to match.
+  It appears in the picker with a live preview, in the searchbox
+  category. Long-press → the pencil opens the customize screen
+  for that widget. The widget update path is hardened: a render
+  failure falls back to a flat plate with the same tap targets
+  instead of leaving the host an error placeholder.
+  (An earlier 4×2 action-grid widget was removed in v4.5.0 —
+  its actions were the deep links the finding below rules out.)
 
 ## The ask page
 
@@ -37,23 +43,27 @@ filtering as you type. Enter sends the text into Muse's
 composer — see the deep-link note below for how, and why it
 doesn't use a deep link.
 
-## Customize
+## The app is the settings page
 
-Theme (One UI blue / system palette / Stephany rose / custom hue
-+ saturation), pill transparency, and the shortcut action. Per
-the design's scope rule, **the theme color only ever touches the
-M logo and the action icons** — the bar itself is always the
-exact Finder bar. The Stephany theme is a muted rose pink
-(`#B46C5D`) sampled from a reference photo.
+Opening the app lands on the Customize screen — the model is
+the Google search widget's own app. Bar style (One UI Finder /
+Pixel Material You), theme (One UI blue / system palette /
+Stephany rose / custom hue + saturation), pill transparency,
+and the shortcut action, with a live preview; settings apply
+globally, or per-widget when the screen is opened from the
+widget itself. Per the design's scope rule, **the theme color
+only ever touches the M logo and the action icons** — the bar
+itself is always the exact Finder bar (or the Pixel plate). The
+Stephany theme is a muted rose pink (`#B46C5D`) sampled from a
+reference photo; it's a hidden option, unlocked by tapping the
+preview pill five times.
 
-## The hub app
-
-A One UI-styled catalog of all 71 Muse destinations recovered
-from the Muse app's route table (`hatch://` routes, verified
-per-section applinks, web routes), with filter-as-you-type
-search. Tapping a destination copies its URI — because of the
-finding below, copying is the honest behavior; pretending to
-launch them would just fail silently.
+Earlier versions opened on a catalog of all 71 Muse
+destinations recovered from the Muse app's route table
+(`hatch://` routes). It was removed in v4.5.0: because of the
+finding below those URIs can't be launched from outside the
+Meta family, so a browsable list of them was reference
+material nobody could use.
 
 ## Why the deep links don't launch (reverse-engineering note)
 

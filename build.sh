@@ -11,6 +11,7 @@ ANDROID_JAR="${ANDROID_SDK_ROOT:-tools/sdk}/platforms/android-35/android.jar"
 KS="keystore/metamuse.keystore"
 KS_PASS_FILE="keystore/keystore-password.txt"
 
+rm -rf build/classes build/dex
 mkdir -p build/gen build/classes build/dex keystore
 
 if [ ! -f "$KS" ]; then
@@ -34,7 +35,7 @@ echo "== aapt2 link =="
   --manifest AndroidManifest.xml \
   --java build/gen \
   --min-sdk-version 24 --target-sdk-version 35 \
-  --version-code 24 --version-name "4.4.1" \
+  --version-code 25 --version-name "4.5.0" \
   build/res.zip
 
 echo "== javac =="
@@ -51,8 +52,8 @@ echo "== package dex =="
 echo "== zipalign + sign =="
 "$BT/zipalign" -f 4 build/unsigned.apk build/aligned.apk
 "$BT/apksigner" sign --ks "$KS" --ks-pass "pass:$PASS" --key-pass "pass:$PASS" \
-  --out Muse-Widget-4.4.1.apk build/aligned.apk
+  --out Muse-Widget-4.5.0.apk build/aligned.apk
 
 echo "== verify =="
-"$BT/apksigner" verify --print-certs Muse-Widget-4.4.1.apk
-ls -lh Muse-Widget-4.4.1.apk
+"$BT/apksigner" verify --print-certs Muse-Widget-4.5.0.apk
+ls -lh Muse-Widget-4.5.0.apk
