@@ -10,6 +10,8 @@
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
     <!-- Ask page only: Google text predictions while typing. -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Muse panel only: read the next calendar event for Up next. -->
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
     <!-- Wallpaper read for the glass pill (file lane, older APIs). -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
@@ -29,6 +31,32 @@
             android:label="@string/ask_title"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="stateVisible|adjustResize" />
+
+        <!-- The Muse companion panel: greeting, Up next, Ask Muse,
+             and Home controls on stock One UI Home. Entry points
+             are in-app only (app-icon shortcut routed through
+             WidgetCustomizeActivity, and the Muse QS tile), so
+             this activity is not exported. -->
+        <activity
+            android:name=".MusePanelActivity"
+            android:exported="false"
+            android:label="@string/muse_companion_title"
+            android:theme="@style/AppTheme" />
+
+        <!-- Quick Settings tile: opens the Muse companion panel from anywhere. -->
+        <service
+            android:name=".MuseTileService"
+            android:exported="true"
+            android:icon="@drawable/ic_person"
+            android:label="@string/muse_companion_title"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.service.quicksettings.ACTIVE_TILE"
+                android:value="true" />
+        </service>
 
         <!-- Quick Settings tile: opens the ask page from anywhere. -->
         <service

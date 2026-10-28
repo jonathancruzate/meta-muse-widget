@@ -19,6 +19,18 @@
         <categories android:name="android.shortcut.conversation" />
     </shortcut>
     <shortcut
+        android:shortcutId="muse"
+        android:enabled="true"
+        android:icon="@drawable/ic_event"
+        android:shortcutShortLabel="@string/muse_companion_short_label">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.samsung.oneui9.metamusewidget"
+            android:targetClass="com.samsung.oneui9.metamusewidget.WidgetCustomizeActivity"
+            android:data="widget://shortcut/muse" />
+        <categories android:name="android.shortcut.conversation" />
+    </shortcut>
+    <shortcut
         android:shortcutId="new"
         android:enabled="true"
         android:icon="@drawable/ic_plus"

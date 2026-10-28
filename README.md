@@ -1,9 +1,36 @@
 # Muse Widget
 
-Home-screen widgets and a companion app for **Muse from Meta**
-(`com.facebook.aura`) on Samsung Galaxy devices, with two
-search-bar styles — each a faithful port of its platform's bar,
-from values recovered by decompiling the real launchers:
+Home-screen widget and **Muse companion layer** for **Muse from Meta**
+(`com.facebook.aura`) on Samsung Galaxy devices, running on stock
+One UI Home. Current release: **v4.6.2**.
+
+## v4.6.2 — render bug FIXED + Muse companion
+
+- **Render bug fixed.** The "Couldn't add widget" error that broke the
+  search-bar widget from v4.3.2 through v4.5.2 was root-caused by
+  binary diff (REA/jadx) against the last working build, v4.3.1:
+  v4.3.2 added a plain `android.view.View` (`iv_logo_hit`, a logo
+  tap-target overlay) to the widget layout — a bare `View` is not a
+  RemoteViews-supported type, so One UI Home failed inflation and
+  substituted its error layout in both the picker preview and the
+  placed widget. The overlay is gone (the logo tap now lives on the
+  logo ImageView itself), and `build.sh` carries a build-time guard
+  that fails the build if a plain `View` ever reappears in the
+  compiled widget layout. Verified working on-device 2026-10-28.
+- **Muse companion panel** (`MusePanelActivity`) — greeting, an
+  **Up Next** card (next calendar event in 24h, `READ_CALENDAR`),
+  Ask Muse actions, and home-control shortcuts to SmartThings and
+  Google Home.
+- **Muse QS tile** (`MuseTileService`) and a **"Muse today"**
+  long-press shortcut open the panel; the **Ask Muse** QS tile and
+  shortcut open the ask page.
+- Renamed **Stef → Muse** throughout (v4.6.1).
+
+## Search-bar styles
+
+The widget ships with two search-bar styles — each a faithful port
+of its platform's bar, from values recovered by decompiling the
+real launchers:
 
 - **One UI** — Samsung's One UI 9 Finder bar, from One UI Home
   18.0.07.59 (fill `#F2E9E9E9` light / `#F23D3D3D` dark, 52dp

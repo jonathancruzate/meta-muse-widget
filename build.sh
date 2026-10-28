@@ -35,7 +35,7 @@ echo "== aapt2 link =="
   --manifest AndroidManifest.xml \
   --java build/gen \
   --min-sdk-version 24 --target-sdk-version 35 \
-  --version-code 28 --version-name "4.6.0" \
+  --version-code 30 --version-name "4.6.2" \
   build/res.zip
 
 echo "== javac =="
@@ -49,11 +49,27 @@ echo "== package dex =="
 # classes.dex must sit at the APK root, not under dex/
 (cd build/dex && zip -q ../unsigned.apk classes.dex)
 
+echo "== render guard (v4.6.2, REA-RENDER-DIFF-431) =="
+# The 4.3.2->4.5.2 render break was a plain <View> (iv_logo_hit) in the
+# widget layout: android.view.View is not a RemoteViews-supported type, so
+# One UI Home fails inflation and shows "Couldn't add widget". Fail the
+# build if the compiled widget layout ever contains a plain View again,
+# or if the iv_logo_hit resource name reappears in the resource table.
+if "$BT/aapt2" dump xmltree build/unsigned.apk --file res/layout/widget_search_bar.xml | grep -Eq "E: View( |$)"; then
+  echo "RENDER GUARD FAILED: plain <View> element in compiled widget_search_bar.xml"
+  exit 1
+fi
+if "$BT/aapt2" dump resources build/unsigned.apk | grep -q "iv_logo_hit"; then
+  echo "RENDER GUARD FAILED: iv_logo_hit present in resources.arsc"
+  exit 1
+fi
+echo "render guard passed"
+
 echo "== zipalign + sign =="
 "$BT/zipalign" -f 4 build/unsigned.apk build/aligned.apk
 "$BT/apksigner" sign --ks "$KS" --ks-pass "pass:$PASS" --key-pass "pass:$PASS" \
-  --out Muse-Widget-4.6.0.apk build/aligned.apk
+  --out Muse-Widget-4.6.2.apk build/aligned.apk
 
 echo "== verify =="
-"$BT/apksigner" verify --print-certs Muse-Widget-4.6.0.apk
-ls -lh Muse-Widget-4.6.0.apk
+"$BT/apksigner" verify --print-certs Muse-Widget-4.6.2.apk
+ls -lh Muse-Widget-4.6.2.apk

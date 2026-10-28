@@ -12,8 +12,8 @@
     <color name="activated">#3E91FF</color>
     <color name="glass_fill">#B8FFFFFF</color>
     <!-- Finder-modeled widget pill: the One UI 9 Finder bar is a matte,
-         borderless light pill (its on-screen read over a wallpaper
-         sampled #939393 in a device screenshot — a translucent
+         borderless light pill (its on-screen read over his wallpaper
+         sampled #939393 in his 2026-10-26 screenshot — a translucent
          light fill; the solid equivalent is the spec component tone). -->
     <!-- Exact value decomposed from One UI Home 18.0.07.59:
          finder_search_bar_background_color #f2e9e9e9 (the F2 alpha
@@ -23,9 +23,12 @@
     <color name="nowbar_fill">#F20A0A0A</color>
     <color name="on_primary">#FFFFFF</color>
     <color name="divider">#1F000000</color>
-    <!-- Stephany theme: a muted rose pink (#B46C5D, median of lit
-         patches sampled from a reference photo), with soft and strong
-         family tones derived from the same hue. -->
+    <!-- Stephany theme: the muted pink of Stephany's sweater (the one from
+         when they first met; photo supplied 2026-10-25). stephany_accent is
+         sampled from the sweater itself (#B46C5D, median of lit knit
+         patches); soft/strong are its lightened/deepened family tones.
+         Applied to the Muse logo backing and the shortcut control,
+         per Jonathan's direction. -->
     <color name="stephany_accent">#B46C5D</color>
     <color name="stephany_accent_soft">#EFDBD6</color>
     <color name="stephany_accent_strong">#96544A</color>

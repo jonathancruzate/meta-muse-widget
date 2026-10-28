@@ -7,7 +7,7 @@ import java.util.List;
  * Every URI the Meta Muse app (Muse from Meta, com.facebook.aura) exposes.
  *
  * Sources, all from the Muse APK 13.0.0.4.159 (the build installed on
- * the target device; APKMirror copy):
+ * Jonathan's phone; APKMirror copy, sha256 in the build report):
  *   [M] AndroidManifest intent-filters of AuraDeeplinkHandlerActivity:
  *       scheme "hatch" (any host/path), https app links (autoVerify) for
  *       agent.meta.ai, applink.muse.ai, muse.ai, www.muse.ai, http for

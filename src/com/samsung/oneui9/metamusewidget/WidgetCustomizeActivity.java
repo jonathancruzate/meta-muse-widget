@@ -276,6 +276,8 @@ public class WidgetCustomizeActivity extends Activity {
         String uri = data.toString();
         if (uri.endsWith("/ask")) {
             startActivity(new Intent(this, ComposeActivity.class));
+        } else if (uri.endsWith("/muse")) {
+            startActivity(new Intent(this, MusePanelActivity.class));
         } else if (uri.endsWith("/new")) {
             Router.dispatch(this, UriCatalog.MODE_ASSIST, null, null);
         } else {
