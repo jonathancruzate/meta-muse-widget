@@ -1,6 +1,7 @@
 # Signing material — never commit
 keystore/
 keystore-password.txt
+panel-slug.txt
 
 # Build outputs
 build/

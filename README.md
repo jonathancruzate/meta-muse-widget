@@ -2,7 +2,32 @@
 
 Home-screen widget and **Muse companion layer** for **Muse from Meta**
 (`com.facebook.aura`) on Samsung Galaxy devices, running on stock
-One UI Home. Current release: **v4.6.2**.
+One UI Home. Current release: **v4.7.0**.
+
+## v4.7.0 — the panel goes live
+
+- **Live data in the Muse panel.** A new "Muse today" card shows
+  the day's brief highlights (distilled on the host from the
+  already-redacted Daily Brief snapshot — the raw brief body never
+  leaves the host) plus a house-status row (current mode with its
+  report age, desired-vs-actual when out of sync). Design:
+  [refs/LIVE-DATA-LANE-DESIGN.md](refs/LIVE-DATA-LANE-DESIGN.md).
+- **How it connects.** The host pushes the distillate to a
+  secret-authed ingest endpoint on the existing mode-sync Worker;
+  the app reads one merged JSON from a capability URL whose slug
+  is injected at build time from a local 0600 file (the
+  keystore-password pattern) — the slug is never in this source
+  tree, and `build.sh` fails the build if any real secret pattern
+  reaches the source or the compiled dex (the new no-secrets
+  guard, beside the render guard). Producer:
+  [tools/panel-brief-push.py](tools/panel-brief-push.py).
+- **V1 content defaults.** Decision-kind highlights are excluded
+  (only the count renders — "N waiting on you") and
+  health-adjacent items are filtered out entirely; stale data
+  always shows its age in words, never fake-fresh. Fetch happens
+  on panel open (throttled) plus a manual Refresh; no background
+  work, no new permissions, and the widget surfaces are
+  untouched.
 
 ## v4.6.2 — render bug FIXED + Muse companion
 

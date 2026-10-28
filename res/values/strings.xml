@@ -71,9 +71,30 @@
     <string name="muse_companion_ask">Ask Muse</string>
     <string name="muse_companion_chat">Chat</string>
     <string name="home_controls">Home controls</string>
-    <string name="home_controls_note">Modes still run through Muse — these just open the apps.</string>
+    <string name="home_controls_note">House mode above is the phone\'s last report. Modes still run through Muse — these just open the apps.</string>
     <string name="smartthings">SmartThings</string>
     <string name="google_home">Google Home</string>
     <string name="app_not_found">%1$s not found on this device</string>
-    <string name="muse_companion_footer">Muse companion v4.6.2 — on stock One UI Home</string>
+    <string name="muse_companion_footer">Muse companion v4.7.0 — on stock One UI Home</string>
+    <!-- Live-data lane (v4.7.0): Muse today card + house status row. -->
+    <string name="panel_today">Muse today</string>
+    <string name="panel_refresh">Refresh</string>
+    <string name="panel_refreshing">Refreshing…</string>
+    <string name="panel_not_configured">Live data isn\'t set up in this build.</string>
+    <string name="panel_unavailable">Live data unavailable</string>
+    <string name="panel_link_expired">Live data link expired — ask Muse for a fresh build.</string>
+    <string name="panel_no_brief">No brief yet</string>
+    <string name="panel_brief_from">Brief from %1$s</string>
+    <string name="panel_brief_from_date">Brief for %1$s · %2$s</string>
+    <string name="panel_waiting_on_you">%1$d waiting on you</string>
+    <string name="panel_showing_cached">Couldn\'t refresh · showing %1$s</string>
+    <string name="panel_house_not_reported">House mode not reported yet</string>
+    <string name="panel_house_recent">%1$s · reported %2$s</string>
+    <string name="panel_house_last_reported">House mode last reported %1$s</string>
+    <string name="panel_house_out_of_sync">%1$s set · phone still reports %2$s</string>
+    <string name="panel_house_reported">Reported %1$s</string>
+    <string name="panel_age_now">just now</string>
+    <string name="panel_age_min">%1$d min ago</string>
+    <string name="panel_age_hours">%1$d h ago</string>
+    <string name="panel_age_days">%1$d d ago</string>
 </resources>
