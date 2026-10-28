@@ -44,7 +44,6 @@
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="muse_logo_desc">Muse logo</string>
-    <string name="logo_open_app_desc">Open Muse</string>
     <string name="not_found">Muse from Meta (com.facebook.aura) not found on device</string>
     <string name="counter_template">%1$d destinations</string>
     <string name="no_results">No matching destination</string>
@@ -61,4 +60,20 @@
     <string name="shortcut_action_launch">Open app</string>
     <string name="copied_gate">URI copied. Muse only accepts deeplinks from Meta-signed apps, so destinations open from inside Muse — paste it in a chat or note.</string>
     <string name="hub_note">Muse accepts deeplinks only from Meta\'s own apps (verified in its code), so destinations below copy their URI. The actions — new chat, assistant, search — open Muse directly: type in the search field above and press search to land in the composer with your text.</string>
+    <string name="stef_title">Stef</string>
+    <string name="stef_short_label">Stef today</string>
+    <string name="stef_greeting_morning">Good morning, Jonathan</string>
+    <string name="stef_greeting_afternoon">Good afternoon, Jonathan</string>
+    <string name="stef_greeting_evening">Good evening, Jonathan</string>
+    <string name="up_next">Up next</string>
+    <string name="show_next_event">Show my next event</string>
+    <string name="nothing_upcoming">Nothing coming up in the next 24 hours</string>
+    <string name="ask_stef">Ask Stef</string>
+    <string name="stef_chat">Chat</string>
+    <string name="home_controls">Home controls</string>
+    <string name="home_controls_note">Modes still run through Stef — these just open the apps.</string>
+    <string name="smartthings">SmartThings</string>
+    <string name="google_home">Google Home</string>
+    <string name="app_not_found">%1$s not found on this device</string>
+    <string name="stef_footer">Stef companion v4.6.0 — on stock One UI Home</string>
 </resources>

@@ -78,13 +78,17 @@ public class SearchBarWidgetProvider extends AppWidgetProvider {
                     android.app.PendingIntent.getActivity(context, 1000 + id, compose,
                             android.app.PendingIntent.FLAG_UPDATE_CURRENT
                                     | android.app.PendingIntent.FLAG_IMMUTABLE));
-            // The logo is its own target (a transparent hit view over
-            // the glyph): tapping it just opens the Muse app — a
-            // plain launch, no ask page.
+            // The logo glyph itself is its own target: tapping it just
+            // opens the Muse app — a plain launch, no ask page. The
+            // click intent goes on iv_muse_logo directly (v4.5.3: the
+            // v4.3.2 transparent overlay hit-view over the glyph is
+            // what broke the widget on One UI Home — v4.3.1, whose
+            // layout has no overlay, is the last known-good; the logo
+            // now takes the click the same way the shortcut glyph
+            // already did in v4.3.1).
             UriCatalog.Entry openApp = new UriCatalog.Entry("Widget", "Open Muse",
                     null, null, null, R.drawable.ic_open, false);
-            views.setContentDescription(R.id.iv_logo_hit, openApp.label);
-            views.setOnClickPendingIntent(R.id.iv_logo_hit,
+            views.setOnClickPendingIntent(R.id.iv_muse_logo,
                     Router.routerPendingIntent(context, openApp, 3000 + id));
             if (shortcut != null) {
                 views.setViewVisibility(R.id.iv_shortcut, View.VISIBLE);
