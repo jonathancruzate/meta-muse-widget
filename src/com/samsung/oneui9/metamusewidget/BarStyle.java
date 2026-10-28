@@ -273,33 +273,6 @@ public final class BarStyle {
     }
 
     /**
-     * The shortcut as Pixel presents it: a filled circle with the
-     * glyph centered — the circular end button on the Pixel bar.
-     * The glyph keeps the theme accent tint.
-     */
-    public static Bitmap shortcutCircleBitmap(Context ctx, int widgetId, int glyphRes) {
-        float density = ctx.getResources().getDisplayMetrics().density;
-        int size = Math.round(40f * density);
-        Bitmap bmp = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bmp);
-        Paint circle = new Paint(Paint.ANTI_ALIAS_FLAG);
-        circle.setColor(pixelCircleFill(ctx));
-        canvas.drawCircle(size / 2f, size / 2f, size / 2f, circle);
-        android.graphics.Bitmap glyph = android.graphics.BitmapFactory.decodeResource(
-                ctx.getResources(), glyphRes);
-        if (glyph != null) {
-            Paint gp = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
-            gp.setColorFilter(new android.graphics.PorterDuffColorFilter(
-                    accent(ctx, widgetId), android.graphics.PorterDuff.Mode.SRC_IN));
-            float gs = size * 0.55f;
-            canvas.drawBitmap(glyph, null, new RectF(
-                    (size - gs) / 2f, (size - gs) / 2f,
-                    (size + gs) / 2f, (size + gs) / 2f), gp);
-        }
-        return bmp;
-    }
-
-    /**
      * The pill as a bitmap at the widget's real size, so the
      * transparency slider is exact (a static drawable cannot carry
      * a slider-driven alpha).
@@ -309,38 +282,11 @@ public final class BarStyle {
     }
 
     public static Bitmap pillBitmap(Context ctx, int widthDp, int heightDp, int widgetId) {
-        try {
-            return renderPill(ctx, widthDp, heightDp, widgetId);
-        } catch (Throwable t) {
-            // A render failure must never take the widget down
-            // with it (the host shows an error placeholder when an
-            // update dies): fall back to the flat plate.
-            return flatPillBitmap(ctx, widthDp, heightDp, widgetId);
-        }
-    }
-
-    /** The flat plate: the style's fill as a plain stadium, no
-     * wallpaper texture, no shadow. The guaranteed-render path. */
-    public static Bitmap flatPillBitmap(Context ctx, int widthDp, int heightDp, int widgetId) {
-        float density = ctx.getResources().getDisplayMetrics().density;
-        int w = Math.max(48, Math.round(widthDp * density));
-        int h = Math.max(24, Math.round(heightDp * density));
-        Bitmap bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bmp);
-        Paint fillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        fillPaint.setColor(isPixel(ctx, widgetId) ? pixelFill(ctx, widgetId) : fill(ctx, widgetId));
-        canvas.drawRoundRect(new RectF(0, 0, w, h), h / 2f, h / 2f, fillPaint);
-        if (!isPixel(ctx, widgetId)) {
-            float sw = Math.max(1f, 0.5f * density);
-            Paint stroke = new Paint(Paint.ANTI_ALIAS_FLAG);
-            stroke.setStyle(Paint.Style.STROKE);
-            stroke.setStrokeWidth(sw);
-            stroke.setColor(outlineColor(ctx));
-            float inset = sw / 2f;
-            canvas.drawRoundRect(new RectF(inset, inset, w - inset, h - inset),
-                    h / 2f - inset, h / 2f - inset, stroke);
-        }
-        return bmp;
+        // v4.5.2: the exact v4.3.2 render — the One UI glass pill,
+        // no style branch, no fallback path. The Pixel plate that
+        // v4.4.0 added here is quarantined with the rest of the
+        // Pixel widget path (see SearchBarWidgetProvider).
+        return renderPill(ctx, widthDp, heightDp, widgetId);
     }
 
     private static Bitmap renderPill(Context ctx, int widthDp, int heightDp, int widgetId) {
@@ -349,19 +295,6 @@ public final class BarStyle {
         int h = Math.max(24, Math.round(heightDp * density));
         Bitmap bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bmp);
-        if (isPixel(ctx, widgetId)) {
-            // Pixel plate (refs/PIXEL-FINDINGS.md): a stadium of
-            // solid dynamic surfaceContainerLow with a soft shadow
-            // in its 6dp inset band — no glass, no sheen, no
-            // hairline.
-            RectF plate = new RectF(0, 0.5f * density, w, h - 2.5f * density);
-            Paint platePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-            platePaint.setColor(pixelFill(ctx, widgetId));
-            platePaint.setShadowLayer(2f * density, 0, 1f * density,
-                    isNight(ctx) ? 0x80000000 : 0x40000000);
-            canvas.drawRoundRect(plate, plate.height() / 2f, plate.height() / 2f, platePaint);
-            return bmp;
-        }
         float r = h / 2f;
         RectF pill = new RectF(0, 0, w, h);
         android.graphics.Path pillPath = new android.graphics.Path();

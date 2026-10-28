@@ -24,21 +24,21 @@ public class SearchBarWidgetProvider extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager manager, int[] appWidgetIds) {
         for (int id : appWidgetIds) {
-            try {
-                updateOne(context, manager, id);
-            } catch (Throwable t) {
-                // A failed render must never leave the host with a
-                // dead widget: fall back to the flat plate with the
-                // same tap targets.
-                try {
-                    manager.updateAppWidget(id, fallbackViews(context, id));
-                } catch (Throwable ignored) {
-                }
-            }
+            updateOne(context, manager, id);
         }
     }
 
     private void updateOne(Context context, AppWidgetManager manager, int id) {
+            // v4.5.2 rollback (swarm verdict, 2026-10-27): the
+            // widget renders exactly the v4.3.2 path — the last
+            // version that worked on-device. Any per-widget
+            // bar_style override left by the 4.4.x Pixel experiment
+            // is scrubbed on sight, and no Pixel code (dynamic
+            // framework-color lookups, bitmap-baked shortcut,
+            // sweep-gradient logo) is reachable from a widget
+            // update. Pixel rendering survives in-app only (the
+            // ask page), quarantined until it is re-proven.
+            WidgetPrefs.scrubBarStyle(context, id);
             // Per-widget settings (theme, transparency, shortcut),
             // each falling back to the global value when this
             // widget was never individually customized.
@@ -64,18 +64,10 @@ public class SearchBarWidgetProvider extends AppWidgetProvider {
             // The root FrameLayout pads 2dp on every side.
             views.setImageViewBitmap(R.id.iv_pill_bg,
                     BarStyle.pillBitmap(context, wDp - 4, 52, id));
-            // The bar's left logo follows the color theme in
-            // every style: the dynamic sweep when the System
-            // theme is in charge of the Pixel bar (the framework
-            // tones are the system palette), the theme's accent
-            // tint otherwise.
-            if (BarStyle.useDynamicLogo(context, id)) {
-                views.setImageViewBitmap(R.id.iv_muse_logo,
-                        BarStyle.dynamicLogoBitmap(context));
-            } else {
-                views.setInt(R.id.iv_muse_logo, "setColorFilter", accent);
-            }
-            views.setTextColor(R.id.tv_search_query, BarStyle.hintColor(context, id));
+            // The bar's left logo takes the theme's accent tint
+            // (the v4.3.2 treatment, restored in v4.5.2).
+            views.setInt(R.id.iv_muse_logo, "setColorFilter", accent);
+            views.setTextColor(R.id.tv_search_query, BarStyle.hintColor(context));
             // Tapping the bar opens this app's ask page (type with
             // suggestions; Enter lands the text in Muse's composer).
             android.content.Intent compose = new android.content.Intent(
@@ -96,16 +88,8 @@ public class SearchBarWidgetProvider extends AppWidgetProvider {
                     Router.routerPendingIntent(context, openApp, 3000 + id));
             if (shortcut != null) {
                 views.setViewVisibility(R.id.iv_shortcut, View.VISIBLE);
-                if (BarStyle.isPixel(context, id)) {
-                    // Pixel presents the end action as a filled
-                    // circle; the glyph is baked into the bitmap,
-                    // accent tint included.
-                    views.setImageViewBitmap(R.id.iv_shortcut,
-                            BarStyle.shortcutCircleBitmap(context, id, shortcut.icon));
-                } else {
-                    views.setImageViewResource(R.id.iv_shortcut, shortcut.icon);
-                    views.setInt(R.id.iv_shortcut, "setColorFilter", accent);
-                }
+                views.setImageViewResource(R.id.iv_shortcut, shortcut.icon);
+                views.setInt(R.id.iv_shortcut, "setColorFilter", accent);
                 views.setContentDescription(R.id.iv_shortcut, shortcut.label);
                 views.setOnClickPendingIntent(R.id.iv_shortcut,
                         Router.routerPendingIntent(context, shortcut, 2000 + id));
@@ -113,29 +97,6 @@ public class SearchBarWidgetProvider extends AppWidgetProvider {
                 views.setViewVisibility(R.id.iv_shortcut, View.GONE);
             }
             manager.updateAppWidget(id, views);
-    }
-
-    /** The guaranteed-render fallback: flat plate, themed logo,
-     * the bar and logo tap targets, no shortcut glyph. */
-    private RemoteViews fallbackViews(Context context, int id) {
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_search_bar);
-        views.setImageViewBitmap(R.id.iv_pill_bg, BarStyle.flatPillBitmap(context, 296, 52, id));
-        views.setInt(R.id.iv_muse_logo, "setColorFilter", BarStyle.accent(context, id));
-        views.setTextColor(R.id.tv_search_query, BarStyle.hintColor(context, id));
-        android.content.Intent compose = new android.content.Intent(context, ComposeActivity.class);
-        compose.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK
-                | android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        views.setOnClickPendingIntent(R.id.container_search_bar,
-                android.app.PendingIntent.getActivity(context, 1000 + id, compose,
-                        android.app.PendingIntent.FLAG_UPDATE_CURRENT
-                                | android.app.PendingIntent.FLAG_IMMUTABLE));
-        UriCatalog.Entry openApp = new UriCatalog.Entry("Widget", "Open Muse",
-                null, null, null, R.drawable.ic_open, false);
-        views.setContentDescription(R.id.iv_logo_hit, openApp.label);
-        views.setOnClickPendingIntent(R.id.iv_logo_hit,
-                Router.routerPendingIntent(context, openApp, 3000 + id));
-        views.setViewVisibility(R.id.iv_shortcut, View.GONE);
-        return views;
     }
 
     @Override

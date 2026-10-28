@@ -35,7 +35,7 @@ echo "== aapt2 link =="
   --manifest AndroidManifest.xml \
   --java build/gen \
   --min-sdk-version 24 --target-sdk-version 35 \
-  --version-code 26 --version-name "4.5.1" \
+  --version-code 27 --version-name "4.5.2" \
   build/res.zip
 
 echo "== javac =="
@@ -52,8 +52,8 @@ echo "== package dex =="
 echo "== zipalign + sign =="
 "$BT/zipalign" -f 4 build/unsigned.apk build/aligned.apk
 "$BT/apksigner" sign --ks "$KS" --ks-pass "pass:$PASS" --key-pass "pass:$PASS" \
-  --out Muse-Widget-4.5.1.apk build/aligned.apk
+  --out Muse-Widget-4.5.2.apk build/aligned.apk
 
 echo "== verify =="
-"$BT/apksigner" verify --print-certs Muse-Widget-4.5.1.apk
-ls -lh Muse-Widget-4.5.1.apk
+"$BT/apksigner" verify --print-certs Muse-Widget-4.5.2.apk
+ls -lh Muse-Widget-4.5.2.apk

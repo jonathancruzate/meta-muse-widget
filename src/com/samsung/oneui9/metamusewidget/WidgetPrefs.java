@@ -186,10 +186,21 @@ public final class WidgetPrefs {
     }
 
     public static String barStyle(Context ctx, int id) {
-        if (id > 0 && prefs(ctx).contains(k(KEY_BAR_STYLE, id))) {
-            return prefs(ctx).getString(k(KEY_BAR_STYLE, id), BAR_STYLE_ONEUI);
-        }
+        // v4.5.2: per-widget bar_style overrides are IGNORED.
+        // The 4.4.x Pixel widget path is quarantined after it
+        // broke placed widgets; a stale "pixel" override on an
+        // old widget id must never route an update again. The
+        // global value alone decides (in-app surfaces only —
+        // the widget itself renders the One UI path regardless).
         return barStyle(ctx);
+    }
+
+    /** Drop a placed widget's stored bar_style override (the
+     * provider calls this on every update as a migration scrub). */
+    public static void scrubBarStyle(Context ctx, int id) {
+        if (id > 0 && prefs(ctx).contains(k(KEY_BAR_STYLE, id))) {
+            prefs(ctx).edit().remove(k(KEY_BAR_STYLE, id)).apply();
+        }
     }
 
     public static int customHue(Context ctx, int id) {
