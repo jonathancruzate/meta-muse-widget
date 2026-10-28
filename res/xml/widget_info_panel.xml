@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Muse panel widget (v4.8.0): the live panel as a resizable
+     home-screen widget. Size-adaptive via the Android 12+
+     responsive RemoteViews API (SizeF breakpoints in the
+     provider), with option-driven density selection below 31.
+     updatePeriodMillis sits at the platform floor (30 min);
+     the panel activity pokes an extra update after each of its
+     own fetches, and the Refresh affordance in the widget fires
+     an on-demand broadcast. No configure activity: there is
+     nothing per-widget to set. -->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:description="@string/widget_panel_name"
+    android:initialLayout="@layout/widget_panel_medium"
+    android:minWidth="180dp"
+    android:minHeight="100dp"
+    android:minResizeWidth="110dp"
+    android:minResizeHeight="52dp"
+    android:previewImage="@drawable/ic_launcher_preview"
+    android:previewLayout="@layout/widget_panel_medium"
+    android:resizeMode="horizontal|vertical"
+    android:targetCellWidth="4"
+    android:targetCellHeight="2"
+    android:updatePeriodMillis="1800000"
+    android:widgetCategory="home_screen" />

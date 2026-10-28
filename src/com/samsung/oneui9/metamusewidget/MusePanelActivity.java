@@ -241,6 +241,12 @@ public class MusePanelActivity extends Activity {
                         fetchInFlight = false;
                         if (refreshLabel != null) refreshLabel.setText(R.string.panel_refresh);
                         renderPanel(r);
+                        // The fetch just refreshed the shared cache:
+                        // poke the home-screen panel widget (v4.8.0)
+                        // so it re-renders from the same fresh data.
+                        if (r.status == PanelDataClient.OK && !r.fromCache) {
+                            MusePanelWidgetProvider.poke(MusePanelActivity.this);
+                        }
                     }
                 });
             }

@@ -2,7 +2,40 @@
 
 Home-screen widget and **Muse companion layer** for **Muse from Meta**
 (`com.facebook.aura`) on Samsung Galaxy devices, running on stock
-One UI Home. Current release: **v4.7.0**.
+One UI Home. Current release: **v4.8.0**.
+
+## v4.8.0 — the panel is a widget now
+
+- **Resizable panel widget.** The Muse panel is now also a
+  home-screen widget (`MusePanelWidgetProvider`), beside the
+  search bar, which stays frozen and untouched. Add it from the
+  widget picker as **Muse panel**, then stretch it anywhere from
+  a compact strip to full screen — it reflows through three
+  densities: compact (brief headline + house line), medium
+  (+ brief meta, three highlights, the decide counter, Refresh),
+  and full (greeting/date header, five highlights, house block,
+  Up Next, Refresh). On API 31+ the densities ship as one
+  responsive RemoteViews with size breakpoints; below that the
+  provider picks a density from the widget's size and re-picks
+  on every resize.
+- **Same live data, same rules.** The widget renders through the
+  shared `PanelDataClient` fetch+cache: last-good data shows
+  immediately and a background fetch refreshes it, so the widget
+  never blocks on the network. Tapping the widget opens the full
+  Muse panel; the in-widget Refresh and the panel itself both
+  keep it in step (the panel pokes the widget after each fresh
+  fetch). Up Next appears at full density only when calendar
+  access is already granted — a widget can't ask for it.
+- **One UI 9 + Material You.** The card is the One UI 9 focus
+  block (18dp radius, day/night container fill); on API 31+ the
+  fill switches to the Material You system neutral tones and the
+  accent resolves at render time from the framework dynamic
+  accent, with the One UI primary #0381FE as the fallback.
+- **Guards extended.** The build's render guard now scans every
+  widget layout (the search bar plus all three panel densities)
+  and fails the build if any of them uses a view class
+  RemoteViews can't inflate; the no-secrets guard is unchanged.
+  No new permissions; same signing key; installs over v4.7.0.
 
 ## v4.7.0 — the panel goes live
 

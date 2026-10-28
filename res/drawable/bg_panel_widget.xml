@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Panel widget card (v4.8.0): the One UI 9 focus block — 18dp
+     radius, solid container (which flips light/night through
+     values-night, like bg_card). On API 31+ the drawable-v31 /
+     drawable-night-v31 variants replace the fill with the
+     Material You system neutral tone so the widget follows the
+     device palette. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <corners android:radius="18dp" />
+    <solid android:color="@color/container" />
+</shape>

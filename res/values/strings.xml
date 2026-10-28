@@ -2,6 +2,7 @@
 <resources>
     <string name="app_name">Muse Widget</string>
     <string name="widget_search_name">Muse Widget Search Bar</string>
+    <string name="widget_panel_name">Muse panel</string>
     <string name="widget_grid_name">Muse Widget Shortcuts</string>
     <string name="hub_title">Muse</string>
     <string name="hub_subtitle">Every destination in Muse from Meta, one tap away</string>
@@ -75,7 +76,7 @@
     <string name="smartthings">SmartThings</string>
     <string name="google_home">Google Home</string>
     <string name="app_not_found">%1$s not found on this device</string>
-    <string name="muse_companion_footer">Muse companion v4.7.0 — on stock One UI Home</string>
+    <string name="muse_companion_footer">Muse companion v4.8.0 — on stock One UI Home</string>
     <!-- Live-data lane (v4.7.0): Muse today card + house status row. -->
     <string name="panel_today">Muse today</string>
     <string name="panel_refresh">Refresh</string>

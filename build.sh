@@ -35,7 +35,7 @@ echo "== aapt2 link =="
   --manifest AndroidManifest.xml \
   --java build/gen \
   --min-sdk-version 24 --target-sdk-version 35 \
-  --version-code 31 --version-name "4.7.0" \
+  --version-code 32 --version-name "4.8.0" \
   build/res.zip
 
 echo "== panel config (v4.7.0 live-data lane) =="
@@ -79,16 +79,34 @@ echo "== package dex =="
 # classes.dex must sit at the APK root, not under dex/
 (cd build/dex && zip -q ../unsigned.apk classes.dex)
 
-echo "== render guard (v4.6.2, REA-RENDER-DIFF-431) =="
+echo "== render guard (v4.6.2, extended v4.8.0; REA-RENDER-DIFF-431) =="
 # The 4.3.2->4.5.2 render break was a plain <View> (iv_logo_hit) in the
 # widget layout: android.view.View is not a RemoteViews-supported type, so
-# One UI Home fails inflation and shows "Couldn't add widget". Fail the
-# build if the compiled widget layout ever contains a plain View again,
-# or if the iv_logo_hit resource name reappears in the resource table.
-if "$BT/aapt2" dump xmltree build/unsigned.apk --file res/layout/widget_search_bar.xml | grep -Eq "E: View( |$)"; then
-  echo "RENDER GUARD FAILED: plain <View> element in compiled widget_search_bar.xml"
+# One UI Home fails inflation and shows "Couldn't add widget". v4.8.0
+# extends the guard from the one search-bar layout to EVERY widget
+# layout: everything referenced by any widget-info file
+# (initialLayout + previewLayout) plus every res/layout/widget_*.xml
+# (the panel widget's density layouts are referenced from provider
+# code via the responsive RemoteViews map, not from widget-info):
+# each compiled layout is scanned and EVERY element in it must be a
+# RemoteViews-supported (@RemoteView) view class. The iv_logo_hit
+# resource-name check stays as well.
+RV_SUPPORTED="FrameLayout LinearLayout RelativeLayout GridLayout AnalogClock Button Chronometer ImageButton ImageView ProgressBar TextClock TextView ViewFlipper ListView GridView StackView AdapterViewFlipper"
+WIDGET_LAYOUTS="$( { grep -hoE '@layout/[A-Za-z0-9_]+' res/xml/widget_info*.xml | sed 's,^@layout/,,'; ls res/layout/widget_*.xml | sed -e 's,^res/layout/,,' -e 's,\.xml$,,'; } | sort -u )"
+if [ -z "$WIDGET_LAYOUTS" ]; then
+  echo "RENDER GUARD FAILED: no widget layouts found in res/xml/widget_info*.xml"
   exit 1
 fi
+for L in $WIDGET_LAYOUTS; do
+  echo "render guard: scanning compiled res/layout/$L.xml"
+  ELEMENTS="$("$BT/aapt2" dump xmltree build/unsigned.apk --file "res/layout/$L.xml" | grep -oE 'E: [A-Za-z][A-Za-z0-9_.]*' | sed 's,^E: ,,' | sort -u)"
+  for E in $ELEMENTS; do
+    case " $RV_SUPPORTED " in
+      *" $E "*) ;;
+      *) echo "RENDER GUARD FAILED: res/layout/$L.xml contains non-RemoteViews element <$E>"; exit 1 ;;
+    esac
+  done
+done
 if "$BT/aapt2" dump resources build/unsigned.apk | grep -q "iv_logo_hit"; then
   echo "RENDER GUARD FAILED: iv_logo_hit present in resources.arsc"
   exit 1
@@ -131,8 +149,8 @@ echo "no-secrets guard passed"
 echo "== zipalign + sign =="
 "$BT/zipalign" -f 4 build/unsigned.apk build/aligned.apk
 "$BT/apksigner" sign --ks "$KS" --ks-pass "pass:$PASS" --key-pass "pass:$PASS" \
-  --out Muse-Widget-4.7.0.apk build/aligned.apk
+  --out Muse-Widget-4.8.0.apk build/aligned.apk
 
 echo "== verify =="
-"$BT/apksigner" verify --print-certs Muse-Widget-4.7.0.apk
-ls -lh Muse-Widget-4.7.0.apk
+"$BT/apksigner" verify --print-certs Muse-Widget-4.8.0.apk
+ls -lh Muse-Widget-4.8.0.apk

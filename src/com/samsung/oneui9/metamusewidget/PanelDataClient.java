@@ -79,7 +79,7 @@ final class PanelDataClient {
             conn.setReadTimeout(TIMEOUT_MS);
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
-            conn.setRequestProperty("User-Agent", "MuseWidget/4.7.0");
+            conn.setRequestProperty("User-Agent", "MuseWidget/4.8.0");
             int code = conn.getResponseCode();
             if (code == 404 || code == 403) {
                 r.status = LINK_EXPIRED;

@@ -116,5 +116,22 @@
                 android:resource="@xml/widget_info_search" />
         </receiver>
 
+        <!-- Resizable Muse panel widget (v4.8.0): the live panel
+             on the home screen, size-adaptive up to full screen.
+             The second intent-filter action is the widget's own
+             Refresh affordance (a broadcast back to the provider). -->
+        <receiver
+            android:name=".MusePanelWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_panel_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.samsung.oneui9.metamusewidget.action.PANEL_WIDGET_REFRESH" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info_panel" />
+        </receiver>
+
     </application>
 </manifest>
