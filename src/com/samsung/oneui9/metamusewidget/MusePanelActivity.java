@@ -168,6 +168,15 @@ public class MusePanelActivity extends Activity {
                                 UriCatalog.MODE_ASSIST, null, null);
                     }
                 });
+        addRow(askCard, getString(R.string.picker_title), R.drawable.ic_grid,
+                new View.OnClickListener() {
+                    @Override public void onClick(View v) {
+                        // The activity picker (v4.9.0): destinations
+                        // as prompt stems on the ask page, not URIs.
+                        startActivity(new Intent(MusePanelActivity.this,
+                                PickerActivity.class));
+                    }
+                });
 
         // ---- Home controls (house status row first) ----
         LinearLayout homeCard = addCard(root, getString(R.string.home_controls));

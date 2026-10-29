@@ -280,6 +280,8 @@ public class WidgetCustomizeActivity extends Activity {
             startActivity(new Intent(this, MusePanelActivity.class));
         } else if (uri.endsWith("/new")) {
             Router.dispatch(this, UriCatalog.MODE_ASSIST, null, null);
+        } else if (uri.endsWith("/activities")) {
+            startActivity(new Intent(this, PickerActivity.class));
         } else {
             return false;
         }

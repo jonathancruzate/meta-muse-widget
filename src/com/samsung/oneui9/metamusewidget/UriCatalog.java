@@ -169,6 +169,77 @@ public final class UriCatalog {
             e("Web", "Agent host", "https://agent.meta.ai/", "https://muse.ai/", R.drawable.ic_open),
     };
 
+    // ---- The activity picker (v4.9.0) ----
+    //
+    // The picker revives the old hub's browsable destination list,
+    // but no row fires a URI: Muse gates every payload deeplink by
+    // caller signature (see the mode note at the top), so a row
+    // instead opens the ask page with a prompt stem already typed —
+    // the way Muse's own Goals and Tracking flows start, with a
+    // sentence like "I want to start a goal about " waiting to be
+    // finished. Enter carries the finished text into Muse through
+    // the ungated ASSIST_QUERY surface. A stem ending in a space or
+    // colon is meant to be completed; a full sentence can be sent
+    // as-is. The few rows whose catalog mode is an ungated surface
+    // (Voice, Assistant, a plain app launch) still fire directly.
+
+    public static final int PICKER_NONE = -1;   // not a picker row
+    public static final int PICKER_ASK = 0;     // ask page, prefilled
+    public static final int PICKER_DIRECT = 1;  // ungated surface, now
+
+    public static int pickerAction(Entry e) {
+        String prompt = pickerPrompt(e);
+        if (prompt != null) return PICKER_ASK;
+        if ("Voice".equals(e.label) || "Assistant".equals(e.label)
+                || "Open Muse app".equals(e.label)) return PICKER_DIRECT;
+        return PICKER_NONE;
+    }
+
+    /** The ask-page prefill for a picker row; null = not a row. */
+    public static String pickerPrompt(Entry e) {
+        switch (e.label) {
+            // Start
+            case "Chat": return "";
+            case "New thread": return "";
+            case "Home": return "Catch me up on what's new";
+            // Tabs
+            case "Search": return "Look up ";
+            case "Feed": return "Catch me up on my feed";
+            case "Explore": return "Show me ideas about ";
+            case "Goals": return "I want to start a goal about ";
+            case "Library": return "Find in my library: ";
+            case "Spaces": return "Tell me about my space ";
+            case "Memory": return "What do you remember about ";
+            // Status and account
+            case "Status": return "What's my status?";
+            case "Activity": return "Show me my recent activity";
+            case "Upcoming tasks": return "I want to start tracking ";
+            case "Approval": return "What's waiting for my approval?";
+            case "Settings": return "I want to change a setting: ";
+            case "Subscriptions": return "Show me my subscriptions";
+            case "Invite friends": return "I want to invite a friend";
+            // Devices
+            case "Settings · Devices": return "Show me my devices";
+            case "Device permissions": return "Check my device permissions";
+            case "Repair a device": return "Help me repair my device: ";
+            // Connect
+            case "Connectors": return "Show me my connectors";
+            case "Connect a service": return "I want to connect ";
+            case "Disconnect a service": return "I want to disconnect ";
+            case "Email setup": return "Help me set up my email";
+            default: return null;
+        }
+    }
+
+    /** Picker rows in catalog order (curated by pickerAction). */
+    public static List<Entry> pickerEntries() {
+        List<Entry> out = new ArrayList<>();
+        for (Entry e : ENTRIES) {
+            if (pickerAction(e) != PICKER_NONE) out.add(e);
+        }
+        return out;
+    }
+
     public static Entry findByUri(String uri) {
         if (uri == null) return null;
         for (Entry e : ENTRIES) {

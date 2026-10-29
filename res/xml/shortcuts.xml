@@ -31,6 +31,18 @@
         <categories android:name="android.shortcut.conversation" />
     </shortcut>
     <shortcut
+        android:shortcutId="activities"
+        android:enabled="true"
+        android:icon="@drawable/ic_grid"
+        android:shortcutShortLabel="@string/picker_title">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.samsung.oneui9.metamusewidget"
+            android:targetClass="com.samsung.oneui9.metamusewidget.WidgetCustomizeActivity"
+            android:data="widget://shortcut/activities" />
+        <categories android:name="android.shortcut.conversation" />
+    </shortcut>
+    <shortcut
         android:shortcutId="new"
         android:enabled="true"
         android:icon="@drawable/ic_plus"

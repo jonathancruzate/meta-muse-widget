@@ -32,6 +32,10 @@ import java.util.Locale;
  */
 public class ComposeActivity extends Activity {
 
+    /** Optional intent extra: text already typed when the page
+     *  opens (the activity picker's prompt stems, v4.9.0). */
+    public static final String EXTRA_PREFILL = "prefill";
+
     private static final String PREFS = "compose";
     private static final String KEY_RECENTS = "recents";
     private static final int MAX_RECENTS = 12;
@@ -76,6 +80,17 @@ public class ComposeActivity extends Activity {
         setContentView(R.layout.activity_compose);
         input = findViewById(R.id.compose_input);
         list = findViewById(R.id.compose_list);
+
+        // Picker prefill: set before the text watcher is registered
+        // below, so the stem doesn't trigger the suggestion flow —
+        // the page opens on the plain recents/starters list with
+        // the stem typed and the cursor at its end, ready to finish.
+        String prefill = getIntent() != null
+                ? getIntent().getStringExtra(EXTRA_PREFILL) : null;
+        if (prefill != null && !prefill.isEmpty()) {
+            input.setText(prefill);
+            input.setSelection(input.getText().length());
+        }
 
         // The bar is the widget's own pill, in the chosen bar
         // style: One UI glass, or the Pixel stadium plate.

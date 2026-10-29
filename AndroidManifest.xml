@@ -43,6 +43,17 @@
             android:label="@string/muse_companion_title"
             android:theme="@style/AppTheme" />
 
+        <!-- The activity picker (v4.9.0): the catalog destinations
+             as prompt stems on the ask page (Muse gates its URIs,
+             so rows prefill text instead of firing links). In-app
+             entry points only: the panel's Ask card and the
+             app-icon shortcut routed through WidgetCustomizeActivity. -->
+        <activity
+            android:name=".PickerActivity"
+            android:exported="false"
+            android:label="@string/picker_title"
+            android:theme="@style/AppTheme" />
+
         <!-- Quick Settings tile: opens the Muse companion panel from anywhere. -->
         <service
             android:name=".MuseTileService"

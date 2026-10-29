@@ -50,6 +50,8 @@
     <string name="no_results">No matching destination</string>
     <string name="open_muse_search">Ask Muse instead</string>
     <string name="ask_title">Ask Muse</string>
+    <string name="picker_title">Activities</string>
+    <string name="picker_count">%1$d activities</string>
     <string name="sc_new">New chat</string>
     <string name="ask_muse_hint">Ask Muse</string>
     <string name="recent_title">Recent</string>
