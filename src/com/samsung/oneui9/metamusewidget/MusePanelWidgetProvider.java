@@ -1,5 +1,6 @@
 package com.samsung.oneui9.metamusewidget;
 
+import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
@@ -8,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.SizeF;
 import android.view.View;
 import android.widget.RemoteViews;
@@ -32,9 +34,13 @@ import java.util.Map;
  *   <li>Every update renders the last-good cache IMMEDIATELY,
  *       then refreshes in the background via {@code goAsync} and
  *       re-renders. The widget never blocks on the network.</li>
- *   <li>Refresh lanes: the 30-minute {@code updatePeriodMillis}
- *       floor, the in-widget Refresh affordance (a broadcast back
- *       to this provider), and {@link #poke} from
+ *   <li>Refresh lanes: a self-scheduled alarm chain (v4.8.1 —
+ *       every update arms the next refresh ~15 minutes out via
+ *       {@code setAndAllowWhileIdle}, so the cadence survives
+ *       Doze and does not depend on the system delivering the
+ *       period), the 30-minute {@code updatePeriodMillis} floor
+ *       as backstop, the in-widget Refresh affordance (a broadcast
+ *       back to this provider), and {@link #poke} from
  *       MusePanelActivity after its own fetches.</li>
  *   <li>Size-adaptive: on API 31+ the three density layouts ship
  *       as one responsive RemoteViews (SizeF breakpoints); below
@@ -60,6 +66,15 @@ public class MusePanelWidgetProvider extends AppWidgetProvider {
     /** The Refresh affordance's broadcast action. */
     public static final String ACTION_REFRESH =
             "com.samsung.oneui9.metamusewidget.action.PANEL_WIDGET_REFRESH";
+
+    // Self-scheduled refresh chain (v4.8.1): the interval the
+    // alarm chain re-arms at, and its PendingIntent request code.
+    // 15 minutes keeps the house age / greeting / Up Next honest
+    // without busy-polling; setAndAllowWhileIdle is inexact, so
+    // Doze may stretch it — the 30-minute updatePeriodMillis in
+    // widget_info_panel remains as the platform backstop.
+    private static final long REFRESH_INTERVAL_MS = 15L * 60L * 1000L;
+    private static final int REQUEST_REFRESH_ALARM = 6000;
 
     private static final int DENSITY_COMPACT = 0;
     private static final int DENSITY_MEDIUM = 1;
@@ -107,8 +122,52 @@ public class MusePanelWidgetProvider extends AppWidgetProvider {
         }
     }
 
+    /**
+     * Arm the next self-scheduled refresh (v4.8.1). Every update
+     * path funnels through onUpdate (the system period, the alarm
+     * chain itself, poke, the Refresh affordance), so arming here
+     * keeps the chain alive; re-arming with the same PendingIntent
+     * replaces the previous alarm rather than stacking a new one.
+     */
+    private static void scheduleNextRefresh(Context ctx) {
+        AlarmManager alarms =
+                (AlarmManager) ctx.getSystemService(Context.ALARM_SERVICE);
+        if (alarms == null) return;
+        Intent intent = new Intent(ctx, MusePanelWidgetProvider.class);
+        intent.setAction(ACTION_REFRESH);
+        PendingIntent pi = PendingIntent.getBroadcast(ctx, REQUEST_REFRESH_ALARM,
+                intent, PendingIntent.FLAG_UPDATE_CURRENT
+                        | PendingIntent.FLAG_IMMUTABLE);
+        alarms.setAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                SystemClock.elapsedRealtime() + REFRESH_INTERVAL_MS, pi);
+    }
+
+    /** Stop the refresh chain when the last panel widget goes away. */
+    private static void cancelRefresh(Context ctx) {
+        AlarmManager alarms =
+                (AlarmManager) ctx.getSystemService(Context.ALARM_SERVICE);
+        if (alarms == null) return;
+        Intent intent = new Intent(ctx, MusePanelWidgetProvider.class);
+        intent.setAction(ACTION_REFRESH);
+        PendingIntent pi = PendingIntent.getBroadcast(ctx, REQUEST_REFRESH_ALARM,
+                intent, PendingIntent.FLAG_UPDATE_CURRENT
+                        | PendingIntent.FLAG_IMMUTABLE);
+        alarms.cancel(pi);
+    }
+
+    @Override
+    public void onEnabled(Context context) {
+        scheduleNextRefresh(context);
+    }
+
+    @Override
+    public void onDisabled(Context context) {
+        cancelRefresh(context);
+    }
+
     @Override
     public void onUpdate(Context context, AppWidgetManager manager, int[] appWidgetIds) {
+        scheduleNextRefresh(context);
         for (int id : appWidgetIds) {
             render(context, manager, id, cachedResult(context));
         }
@@ -122,6 +181,7 @@ public class MusePanelWidgetProvider extends AppWidgetProvider {
         // widget from cache at its new size right away (on API 31+
         // the responsive map re-picks by itself; below 31 this is
         // the density switch), then refresh in the background.
+        scheduleNextRefresh(context);
         render(context, manager, appWidgetId, cachedResult(context));
         refreshAsync(context, manager, new int[]{appWidgetId});
     }
