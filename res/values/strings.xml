@@ -52,6 +52,8 @@
     <string name="ask_title">Ask Muse</string>
     <string name="picker_title">Activities</string>
     <string name="picker_count">%1$d activities</string>
+    <string name="picker_subtitle">Start goals, tracking, and more — as prompts</string>
+    <string name="open">Open</string>
     <string name="sc_new">New chat</string>
     <string name="ask_muse_hint">Ask Muse</string>
     <string name="recent_title">Recent</string>

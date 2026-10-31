@@ -177,6 +177,11 @@ public class WidgetCustomizeActivity extends Activity {
         findViewById(R.id.change_shortcut_button).setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) { showShortcutDialog(); }
         });
+        findViewById(R.id.open_activities_button).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) {
+                startActivity(new Intent(WidgetCustomizeActivity.this, PickerActivity.class));
+            }
+        });
         panelEndpointState = findViewById(R.id.panel_endpoint_state);
         findViewById(R.id.panel_endpoint_set_button).setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) { showPanelEndpointDialog(); }

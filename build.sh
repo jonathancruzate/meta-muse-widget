@@ -35,7 +35,7 @@ echo "== aapt2 link =="
   --manifest AndroidManifest.xml \
   --java build/gen \
   --min-sdk-version 24 --target-sdk-version 35 \
-  --version-code 35 --version-name "4.9.1" \
+  --version-code 36 --version-name "4.9.2" \
   build/res.zip
 
 echo "== panel endpoint: none (v4.9.1) =="
@@ -131,8 +131,8 @@ echo "no-secrets guard passed"
 echo "== zipalign + sign =="
 "$BT/zipalign" -f 4 build/unsigned.apk build/aligned.apk
 "$BT/apksigner" sign --ks "$KS" --ks-pass "pass:$PASS" --key-pass "pass:$PASS" \
-  --out Muse-Widget-4.9.1.apk build/aligned.apk
+  --out Muse-Widget-4.9.2.apk build/aligned.apk
 
 echo "== verify =="
-"$BT/apksigner" verify --print-certs Muse-Widget-4.9.1.apk
-ls -lh Muse-Widget-4.9.1.apk
+"$BT/apksigner" verify --print-certs Muse-Widget-4.9.2.apk
+ls -lh Muse-Widget-4.9.2.apk
