@@ -45,6 +45,8 @@ public class WidgetCustomizeActivity extends Activity {
     private TextView previewHint;
     private TextView shortcutValue;
     private TextView panelEndpointState;
+    private android.widget.LinearLayout panelShortcutsContainer;
+    private View panelShortcutAddButton;
     private View customSection;
     private RadioGroup themeGroup;
     private RadioGroup barStyleGroup;
@@ -194,6 +196,12 @@ public class WidgetCustomizeActivity extends Activity {
             }
         });
         updatePanelEndpointState();
+        panelShortcutsContainer = findViewById(R.id.panel_shortcuts_container);
+        panelShortcutAddButton = findViewById(R.id.panel_shortcut_add_button);
+        panelShortcutAddButton.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { showPanelShortcutAddDialog(); }
+        });
+        renderPanelShortcuts();
         findViewById(R.id.done_button).setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
                 WidgetPrefs.refreshWidgets(WidgetCustomizeActivity.this);
@@ -236,12 +244,14 @@ public class WidgetCustomizeActivity extends Activity {
         }
         previewHint.setTextColor(BarStyle.hintColor(this, widgetId));
         String action = WidgetPrefs.shortcutAction(this, widgetId);
-        if (WidgetPrefs.SHORTCUT_NONE.equals(action)) {
+        UriCatalog.Entry target = WidgetPrefs.shortcutTargetEntry(this, widgetId);
+        if (target == null && WidgetPrefs.SHORTCUT_NONE.equals(action)) {
             previewShortcut.setVisibility(View.GONE);
             shortcutValue.setText(R.string.value_hidden);
         } else {
             previewShortcut.setVisibility(View.VISIBLE);
-            previewShortcut.setImageResource(WidgetPrefs.SHORTCUT_ASSIST.equals(action)
+            previewShortcut.setImageResource(target != null ? target.icon
+                    : WidgetPrefs.SHORTCUT_ASSIST.equals(action)
                     ? R.drawable.ic_assistant : R.drawable.ic_open);
             previewShortcut.setColorFilter(accent);
             if (pixel) {
@@ -309,26 +319,45 @@ public class WidgetCustomizeActivity extends Activity {
     }
 
     private void showShortcutDialog() {
-        // Actions only — Muse gates destination URIs by caller
-        // signature (see Router). Bottom-anchored per the spec.
-        final String[] labels = {
-                getString(R.string.shortcut_action_assist),
-                getString(R.string.shortcut_action_launch),
-                getString(R.string.shortcut_none)};
-        final String[] actions = {
-                WidgetPrefs.SHORTCUT_ASSIST, WidgetPrefs.SHORTCUT_LAUNCH,
-                WidgetPrefs.SHORTCUT_NONE};
-        String current = WidgetPrefs.shortcutAction(this, widgetId);
-        int checked = WidgetPrefs.SHORTCUT_LAUNCH.equals(current) ? 1
-                : WidgetPrefs.SHORTCUT_NONE.equals(current) ? 2 : 0;
+        // The right button can be any picker activity (v4.10.0):
+        // its tap fires the activity's prompt/direct surface
+        // (ShortcutTargets). The old Assistant / Open app choices
+        // are picker entries now too; Hidden stays as the last
+        // choice. Bottom-anchored per the spec.
+        final java.util.List<UriCatalog.Entry> entries = UriCatalog.pickerEntries();
+        final String[] labels = new String[entries.size() + 1];
+        for (int i = 0; i < entries.size(); i++) labels[i] = entries.get(i).label;
+        labels[entries.size()] = getString(R.string.shortcut_none);
+        int checked = entries.size();
+        UriCatalog.Entry current = WidgetPrefs.shortcutTargetEntry(this, widgetId);
+        if (current != null) {
+            for (int i = 0; i < entries.size(); i++) {
+                if (entries.get(i).label.equals(current.label)) checked = i;
+            }
+        } else if (!WidgetPrefs.SHORTCUT_NONE.equals(
+                WidgetPrefs.shortcutAction(this, widgetId))) {
+            String want = WidgetPrefs.SHORTCUT_ASSIST.equals(
+                    WidgetPrefs.shortcutAction(this, widgetId))
+                    ? "Assistant" : "Open Muse app";
+            for (int i = 0; i < entries.size(); i++) {
+                if (entries.get(i).label.equals(want)) checked = i;
+            }
+        }
         android.app.AlertDialog dialog = new android.app.AlertDialog.Builder(this)
                 .setTitle(R.string.shortcut_dialog_title)
                 .setSingleChoiceItems(labels, checked,
                         new android.content.DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(android.content.DialogInterface d, int which) {
-                                WidgetPrefs.setShortcutAction(
-                                        WidgetCustomizeActivity.this, widgetId, actions[which]);
+                                if (which >= entries.size()) {
+                                    WidgetPrefs.setShortcutAction(
+                                            WidgetCustomizeActivity.this, widgetId,
+                                            WidgetPrefs.SHORTCUT_NONE);
+                                } else {
+                                    WidgetPrefs.setShortcutActivity(
+                                            WidgetCustomizeActivity.this, widgetId,
+                                            entries.get(which).label);
+                                }
                                 changed();
                                 d.dismiss();
                             }
@@ -336,6 +365,85 @@ public class WidgetCustomizeActivity extends Activity {
                 .create();
         dialog.show();
         toBottom(dialog);
+    }
+
+    /** The Shortcut panel section: the widget's cells, edited in
+     *  place — a row per cell with a Remove button, plus the Add
+     *  button (gone at the 8-cell cap). A global setting; every
+     *  change re-renders placed panels immediately. */
+    private void renderPanelShortcuts() {
+        if (panelShortcutsContainer == null) return;
+        panelShortcutsContainer.removeAllViews();
+        final java.util.List<String> labels = WidgetPrefs.panelShortcuts(this);
+        for (final String label : labels) {
+            UriCatalog.Entry e = ShortcutTargets.entryForLabel(label);
+            android.widget.LinearLayout row = new android.widget.LinearLayout(this);
+            row.setOrientation(android.widget.LinearLayout.HORIZONTAL);
+            row.setGravity(android.view.Gravity.CENTER_VERTICAL);
+            row.setMinimumHeight(dp(52));
+            android.widget.ImageView icon = new android.widget.ImageView(this);
+            icon.setImageResource(e != null ? e.icon : R.drawable.ic_grid);
+            icon.setColorFilter(getColor(R.color.secondary));
+            row.addView(icon, new android.widget.LinearLayout.LayoutParams(dp(24), dp(24)));
+            TextView text = new TextView(this);
+            text.setText(label);
+            text.setTextSize(16);
+            text.setTextColor(getColor(R.color.foreground));
+            android.widget.LinearLayout.LayoutParams textLp =
+                    new android.widget.LinearLayout.LayoutParams(
+                            0, android.view.ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
+            textLp.setMarginStart(dp(16));
+            row.addView(text, textLp);
+            android.widget.Button remove = new android.widget.Button(this);
+            remove.setText(R.string.remove);
+            remove.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View v) {
+                    java.util.List<String> next = WidgetPrefs.panelShortcuts(
+                            WidgetCustomizeActivity.this);
+                    next.remove(label);
+                    WidgetPrefs.setPanelShortcuts(WidgetCustomizeActivity.this, next);
+                    WidgetPrefs.refreshWidgets(WidgetCustomizeActivity.this);
+                    renderPanelShortcuts();
+                }
+            });
+            row.addView(remove);
+            panelShortcutsContainer.addView(row);
+        }
+        if (panelShortcutAddButton != null) {
+            panelShortcutAddButton.setVisibility(
+                    labels.size() < WidgetPrefs.MAX_PANEL_SHORTCUTS
+                            ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    private void showPanelShortcutAddDialog() {
+        final java.util.List<String> current = WidgetPrefs.panelShortcuts(this);
+        final java.util.List<UriCatalog.Entry> choices = new java.util.ArrayList<>();
+        for (UriCatalog.Entry e : UriCatalog.pickerEntries()) {
+            if (!current.contains(e.label)) choices.add(e);
+        }
+        final String[] labels = new String[choices.size()];
+        for (int i = 0; i < choices.size(); i++) labels[i] = choices.get(i).label;
+        android.app.AlertDialog dialog = new android.app.AlertDialog.Builder(this)
+                .setTitle(R.string.add_shortcut)
+                .setItems(labels, new android.content.DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(android.content.DialogInterface d, int which) {
+                        java.util.List<String> next = WidgetPrefs.panelShortcuts(
+                                WidgetCustomizeActivity.this);
+                        next.add(choices.get(which).label);
+                        WidgetPrefs.setPanelShortcuts(WidgetCustomizeActivity.this, next);
+                        WidgetPrefs.refreshWidgets(WidgetCustomizeActivity.this);
+                        renderPanelShortcuts();
+                    }
+                })
+                .create();
+        dialog.show();
+        toBottom(dialog);
+    }
+
+    private int dp(int v) {
+        return Math.round(v * getResources().getDisplayMetrics().density);
     }
 
     /** App-icon shortcut routing (see res/xml/shortcuts.xml). */

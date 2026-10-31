@@ -54,6 +54,11 @@
     <string name="picker_count">%1$d activities</string>
     <string name="picker_subtitle">Start goals, tracking, and more — as prompts</string>
     <string name="open">Open</string>
+    <string name="widget_shortcuts_name">Muse shortcuts</string>
+    <string name="panel_shortcuts_section">Shortcut panel</string>
+    <string name="panel_shortcuts_hint">Buttons on the Muse shortcuts widget — up to 8</string>
+    <string name="add_shortcut">Add shortcut</string>
+    <string name="remove">Remove</string>
     <string name="sc_new">New chat</string>
     <string name="ask_muse_hint">Ask Muse</string>
     <string name="recent_title">Recent</string>

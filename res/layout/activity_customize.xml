@@ -377,6 +377,44 @@
                     android:layout_weight="1"
                     android:text="@string/clear" />
             </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="14dp"
+                android:background="@color/divider" />
+
+            <!-- The shortcut panel widget's cells (v4.10.0):
+                 rows are built by WidgetCustomizeActivity. -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:text="@string/panel_shortcuts_section"
+                android:textColor="@color/foreground"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="@string/panel_shortcuts_hint"
+                android:textColor="@color/secondary"
+                android:textSize="13sp" />
+
+            <LinearLayout
+                android:id="@+id/panel_shortcuts_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+            <Button
+                android:id="@+id/panel_shortcut_add_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="@string/add_shortcut" />
         </LinearLayout>
     </ScrollView>
 

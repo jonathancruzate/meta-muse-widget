@@ -144,5 +144,21 @@
                 android:resource="@xml/widget_info_panel" />
         </receiver>
 
+        <!-- Shortcut panel widget (v4.10.0): up to eight activity
+             shortcuts in a 4x2 focus block. Cells are a global
+             setting edited on the Customize screen, which is also
+             the widget's configure activity. -->
+        <receiver
+            android:name=".ShortcutPanelWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_shortcuts_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info_shortcuts" />
+        </receiver>
+
     </application>
 </manifest>

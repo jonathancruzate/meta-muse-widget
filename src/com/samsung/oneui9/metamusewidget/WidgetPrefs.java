@@ -6,6 +6,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Widget settings, edited from the hub's Widget settings card:
  * the color theme (One UI spec palette vs the system palette from
@@ -161,10 +165,77 @@ public final class WidgetPrefs {
     }
 
     public static String shortcutActionLabel(Context ctx) {
-        String a = shortcutAction(ctx);
-        if (SHORTCUT_ASSIST.equals(a)) return "Assistant";
-        if (SHORTCUT_LAUNCH.equals(a)) return "Open app";
-        return "Hidden";
+        return shortcutActionLabel(ctx, 0);
+    }
+
+    // ---- Activity targets (v4.10.0) ----
+    // The bar's right button can be ANY picker activity, not just
+    // Assistant / Open app: the choice is stored in the same URI
+    // slot as "widget://activity/<label>". Stored legacy values
+    // (widget://assist, widget://launch, a hatch:// URI, hidden)
+    // keep resolving through actionFor above; an activity value
+    // resolves to its catalog entry here.
+
+    public static final String SHORTCUT_ACTIVITY_PREFIX = "widget://activity/";
+
+    private static String shortcutUriFor(Context ctx, int id) {
+        if (id > 0 && (prefs(ctx).contains(k(KEY_SHORTCUT_URI, id))
+                || prefs(ctx).contains(k(KEY_SHORTCUT_URI, id) + "_hidden"))) {
+            return prefs(ctx).getString(k(KEY_SHORTCUT_URI, id), DEFAULT_SHORTCUT_URI);
+        }
+        return prefs(ctx).getString(KEY_SHORTCUT_URI, DEFAULT_SHORTCUT_URI);
+    }
+
+    /** The picker entry the bar's button is assigned to, or null
+     *  when it carries a legacy action (or is hidden). */
+    public static UriCatalog.Entry shortcutTargetEntry(Context ctx, int id) {
+        if (shortcutHidden(ctx, id)) return null;
+        String uri = shortcutUriFor(ctx, id);
+        if (uri == null || !uri.startsWith(SHORTCUT_ACTIVITY_PREFIX)) return null;
+        return ShortcutTargets.entryForLabel(
+                uri.substring(SHORTCUT_ACTIVITY_PREFIX.length()));
+    }
+
+    public static void setShortcutActivity(Context ctx, int id, String label) {
+        setShortcut(ctx, id, SHORTCUT_ACTIVITY_PREFIX + label, label);
+    }
+
+    // ---- Shortcut panel cells (v4.10.0) ----
+    // The shortcut panel widget's cells: one global ordered set of
+    // picker-activity labels (the panel is a single shared surface,
+    // like the panel endpoint — not per-widget). Stored joined;
+    // an absent key means the starter set, a stored empty string
+    // means the user removed every cell.
+
+    private static final String KEY_PANEL_SHORTCUTS = "panel_shortcuts";
+    private static final String PANEL_SEP = "\u0001";
+    public static final int MAX_PANEL_SHORTCUTS = 8;
+    private static final String[] DEFAULT_PANEL_SHORTCUTS = {
+            "New thread", "Search", "Goals", "Upcoming tasks",
+            "Feed", "Explore", "Memory", "Assistant"};
+
+    public static List<String> panelShortcuts(Context ctx) {
+        List<String> out = new ArrayList<>();
+        String raw = prefs(ctx).getString(KEY_PANEL_SHORTCUTS, null);
+        if (raw == null) {
+            out.addAll(Arrays.asList(DEFAULT_PANEL_SHORTCUTS));
+            return out;
+        }
+        if (!raw.isEmpty()) {
+            for (String s : raw.split(PANEL_SEP)) {
+                if (!s.isEmpty()) out.add(s);
+            }
+        }
+        return out;
+    }
+
+    public static void setPanelShortcuts(Context ctx, List<String> labels) {
+        StringBuilder sb = new StringBuilder();
+        for (String s : labels) {
+            if (sb.length() > 0) sb.append(PANEL_SEP);
+            sb.append(s);
+        }
+        prefs(ctx).edit().putString(KEY_PANEL_SHORTCUTS, sb.toString()).apply();
     }
 
     /** The shortcut target URI, or null when the button is hidden. */
@@ -268,6 +339,8 @@ public final class WidgetPrefs {
     }
 
     public static String shortcutActionLabel(Context ctx, int id) {
+        UriCatalog.Entry e = shortcutTargetEntry(ctx, id);
+        if (e != null) return e.label;
         String a = shortcutAction(ctx, id);
         if (SHORTCUT_ASSIST.equals(a)) return "Assistant";
         if (SHORTCUT_LAUNCH.equals(a)) return "Open app";
@@ -341,7 +414,8 @@ public final class WidgetPrefs {
     /** Re-render every placed widget after a settings change. */
     public static void refreshWidgets(Context ctx) {
         AppWidgetManager manager = AppWidgetManager.getInstance(ctx);
-        Class<?>[] providers = {SearchBarWidgetProvider.class};
+        Class<?>[] providers = {SearchBarWidgetProvider.class,
+                ShortcutPanelWidgetProvider.class};
         for (Class<?> provider : providers) {
             int[] ids = manager.getAppWidgetIds(new ComponentName(ctx, provider));
             if (ids == null || ids.length == 0) continue;

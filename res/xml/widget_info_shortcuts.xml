@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Shortcut panel widget (v4.10.0): up to eight activity
+     shortcuts in a 4x2 focus block. The cell set is a global
+     setting edited on the Customize screen, which is also this
+     widget's configure activity (the add flow lands where the
+     cells are edited, the search bar's pattern). No update
+     period: settings edits re-render placed panels through
+     WidgetPrefs.refreshWidgets. -->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:configure="com.samsung.oneui9.metamusewidget.WidgetCustomizeActivity"
+    android:description="@string/widget_shortcuts_name"
+    android:initialLayout="@layout/widget_shortcuts"
+    android:minWidth="250dp"
+    android:minHeight="110dp"
+    android:minResizeWidth="180dp"
+    android:minResizeHeight="52dp"
+    android:previewImage="@drawable/ic_launcher_preview"
+    android:previewLayout="@layout/widget_shortcuts"
+    android:resizeMode="horizontal|vertical"
+    android:targetCellWidth="4"
+    android:targetCellHeight="2"
+    android:updatePeriodMillis="0"
+    android:widgetCategory="home_screen" />

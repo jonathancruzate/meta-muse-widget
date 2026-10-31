@@ -44,6 +44,9 @@ public class SearchBarWidgetProvider extends AppWidgetProvider {
             // widget was never individually customized.
             int accent = BarStyle.accent(context, id);
             String action = WidgetPrefs.shortcutAction(context, id);
+            // v4.10.0: the button can be any picker activity; an
+            // activity assignment wins over the legacy actions.
+            UriCatalog.Entry activityTarget = WidgetPrefs.shortcutTargetEntry(context, id);
             UriCatalog.Entry shortcut = null;
             if (WidgetPrefs.SHORTCUT_ASSIST.equals(action)) {
                 shortcut = new UriCatalog.Entry("Widget", "Assistant", Router.ASSIST_URI,
@@ -90,7 +93,17 @@ public class SearchBarWidgetProvider extends AppWidgetProvider {
                     null, null, null, R.drawable.ic_open, false);
             views.setOnClickPendingIntent(R.id.iv_muse_logo,
                     Router.routerPendingIntent(context, openApp, 3000 + id));
-            if (shortcut != null) {
+            if (activityTarget != null) {
+                views.setViewVisibility(R.id.iv_shortcut, View.VISIBLE);
+                views.setImageViewResource(R.id.iv_shortcut, activityTarget.icon);
+                views.setInt(R.id.iv_shortcut, "setColorFilter", accent);
+                views.setContentDescription(R.id.iv_shortcut, activityTarget.label);
+                views.setOnClickPendingIntent(R.id.iv_shortcut,
+                        android.app.PendingIntent.getActivity(context, 2000 + id,
+                                ShortcutTargets.intentFor(context, activityTarget),
+                                android.app.PendingIntent.FLAG_UPDATE_CURRENT
+                                        | android.app.PendingIntent.FLAG_IMMUTABLE));
+            } else if (shortcut != null) {
                 views.setViewVisibility(R.id.iv_shortcut, View.VISIBLE);
                 views.setImageViewResource(R.id.iv_shortcut, shortcut.icon);
                 views.setInt(R.id.iv_shortcut, "setColorFilter", accent);

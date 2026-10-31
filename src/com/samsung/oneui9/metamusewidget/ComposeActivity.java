@@ -117,22 +117,30 @@ public class ComposeActivity extends Activity {
         else logo.setColorFilter(BarStyle.accent(this));
         input.setHintTextColor(pixel ? BarStyle.pixelHint(this) : BarStyle.hintColor(this));
 
-        // The shortcut glyph mirrors the widget bar's right button.
+        // The shortcut glyph mirrors the widget bar's right button
+        // — including an activity assignment (v4.10.0): the glyph
+        // becomes the activity's icon and fires its surface.
         ImageView shortcut = findViewById(R.id.compose_shortcut);
+        final UriCatalog.Entry target = WidgetPrefs.shortcutTargetEntry(this, 0);
         String action = WidgetPrefs.shortcutAction(this);
-        if (WidgetPrefs.SHORTCUT_NONE.equals(action)) {
+        if (target == null && WidgetPrefs.SHORTCUT_NONE.equals(action)) {
             shortcut.setVisibility(View.GONE);
         } else {
-            shortcut.setImageResource(WidgetPrefs.SHORTCUT_ASSIST.equals(action)
+            shortcut.setImageResource(target != null ? target.icon
+                    : WidgetPrefs.SHORTCUT_ASSIST.equals(action)
                     ? R.drawable.ic_assistant : R.drawable.ic_open);
             shortcut.setColorFilter(BarStyle.accent(this));
             shortcut.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
-                    Router.dispatch(ComposeActivity.this,
-                            WidgetPrefs.SHORTCUT_ASSIST.equals(
-                                    WidgetPrefs.shortcutAction(ComposeActivity.this))
-                                    ? UriCatalog.MODE_ASSIST : UriCatalog.MODE_LAUNCH,
-                            null, null);
+                    if (target != null) {
+                        ShortcutTargets.fire(ComposeActivity.this, target);
+                    } else {
+                        Router.dispatch(ComposeActivity.this,
+                                WidgetPrefs.SHORTCUT_ASSIST.equals(
+                                        WidgetPrefs.shortcutAction(ComposeActivity.this))
+                                        ? UriCatalog.MODE_ASSIST : UriCatalog.MODE_LAUNCH,
+                                null, null);
+                    }
                     finish();
                 }
             });
