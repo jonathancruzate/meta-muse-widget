@@ -190,3 +190,12 @@ minSdk 24, targetSdk 35.
 ## License
 
 MIT — see [LICENSE](LICENSE).
+
+## Install it with Muse
+
+Just give this prompt to your Muse:
+
+> "Install Muse Widget from https://github.com/jonathancruzate/meta-muse-widget — read the README, install the latest release on my phone, and set it up for me."
+
+Or add this repo in [Obtainium](https://github.com/ImranR98/Obtainium) — it tracks the GitHub releases and keeps the app updated automatically. It works really well.
+
