@@ -2,7 +2,34 @@
 
 Home-screen widget and **Muse companion layer** for **Muse from Meta**
 (`com.facebook.aura`) on Samsung Galaxy devices, running on stock
-One UI Home. Current release: **v4.8.0**.
+One UI Home. Current release: **v4.9.1**.
+
+## v4.9.1 — Activities picker, and the panel takes your own endpoint
+
+- **Activities picker (new in v4.9.0, first released here).** A
+  long-press app shortcut — **Activities** — opens a picker of
+  prompt-stem shortcuts: pick an activity (plan my day, check my
+  messages, review my spending, …) and Muse opens with the
+  prompt already started in the composer, ready to finish and
+  send. It's the fast path for the asks you make every day.
+- **Bring your own panel endpoint.** The live Muse panel (brief
+  highlights + house status, in the panel and its widget) used
+  to read from a URL baked in at build time — which meant it
+  could only ever work on the author's own build. v4.9.1 removes
+  the baked-in URL completely: open the app → **Panel data
+  endpoint**, paste the full URL of your own panel-data endpoint,
+  and the panel lights up. The URL is stored only on your device,
+  the settings screen shows just "Configured · <host>" afterwards,
+  and Clear removes it. The app ships with **no endpoint
+  configured** — until you add one, the panel and its widget show
+  their "not configured" state. Any endpoint that serves the
+  panel JSON contract works; if your Muse maintains your brief,
+  it can stand one up for you.
+- **Guards tightened.** The no-secrets guard now fails the build
+  if the old build-time value (or any baked panel URL) appears
+  anywhere in source or the compiled dex — the endpoint is
+  runtime configuration, never a build artifact. Render guard
+  unchanged; same signing key; installs over v4.9.0.
 
 ## v4.8.0 — the panel is a widget now
 
@@ -45,7 +72,9 @@ One UI Home. Current release: **v4.8.0**.
   leaves the host) plus a house-status row (current mode with its
   report age, desired-vs-actual when out of sync). Design:
   [refs/LIVE-DATA-LANE-DESIGN.md](refs/LIVE-DATA-LANE-DESIGN.md).
-- **How it connects.** The host pushes the distillate to a
+- **How it connects.** *(Superseded in v4.9.1 — the endpoint is
+  now set in the app; nothing is injected at build time.)*
+  The host pushes the distillate to a
   secret-authed ingest endpoint on the existing mode-sync Worker;
   the app reads one merged JSON from a capability URL whose slug
   is injected at build time from a local 0600 file (the
@@ -134,7 +163,9 @@ Opening the app lands on the Customize screen — the model is
 the Google search widget's own app. Bar style (One UI Finder /
 Pixel Material You), theme (One UI blue / system palette /
 Stephany rose / custom hue + saturation), pill transparency,
-and the shortcut action, with a live preview; settings apply
+and the shortcut action, with a live preview; the same screen
+hosts the **Panel data endpoint** setting described above.
+Settings apply
 globally, or per-widget when the screen is opened from the
 widget itself. Per the design's scope rule, **the theme color
 only ever touches the M logo and the action icons** — the bar

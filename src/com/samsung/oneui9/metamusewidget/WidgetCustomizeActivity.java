@@ -44,6 +44,7 @@ public class WidgetCustomizeActivity extends Activity {
     private ImageView previewShortcut;
     private TextView previewHint;
     private TextView shortcutValue;
+    private TextView panelEndpointState;
     private View customSection;
     private RadioGroup themeGroup;
     private RadioGroup barStyleGroup;
@@ -176,6 +177,18 @@ public class WidgetCustomizeActivity extends Activity {
         findViewById(R.id.change_shortcut_button).setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) { showShortcutDialog(); }
         });
+        panelEndpointState = findViewById(R.id.panel_endpoint_state);
+        findViewById(R.id.panel_endpoint_set_button).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { showPanelEndpointDialog(); }
+        });
+        findViewById(R.id.panel_endpoint_clear_button).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) {
+                WidgetPrefs.clearPanelEndpoint(WidgetCustomizeActivity.this);
+                updatePanelEndpointState();
+                MusePanelWidgetProvider.poke(WidgetCustomizeActivity.this);
+            }
+        });
+        updatePanelEndpointState();
         findViewById(R.id.done_button).setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
                 WidgetPrefs.refreshWidgets(WidgetCustomizeActivity.this);
@@ -237,6 +250,57 @@ public class WidgetCustomizeActivity extends Activity {
             }
             shortcutValue.setText(WidgetPrefs.shortcutActionLabel(this, widgetId));
         }
+    }
+
+    /**
+     * The panel endpoint row shows only the configured STATE —
+     * "Configured · <host>" or the not-set line. The full URL is
+     * never rendered back onto the screen after it is saved.
+     */
+    private void updatePanelEndpointState() {
+        if (panelEndpointState == null) return;
+        String url = WidgetPrefs.panelEndpoint(this);
+        if (url.isEmpty()) {
+            panelEndpointState.setText(R.string.panel_endpoint_not_set);
+            return;
+        }
+        String host = android.net.Uri.parse(url).getHost();
+        panelEndpointState.setText(host != null && !host.isEmpty()
+                ? "Configured \u00b7 " + host : "Configured");
+    }
+
+    /** The ONLY configuration path for the panel endpoint: paste
+     *  the full URL, save, done. Nothing ships pre-configured. */
+    private void showPanelEndpointDialog() {
+        final EditText input = new EditText(this);
+        input.setInputType(android.text.InputType.TYPE_TEXT_VARIATION_URI
+                | android.text.InputType.TYPE_CLASS_TEXT);
+        input.setHint(R.string.panel_endpoint_hint);
+        input.setSingleLine(false);
+        int pad = Math.round(20 * getResources().getDisplayMetrics().density);
+        input.setPadding(pad, pad / 2, pad, pad / 2);
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle(R.string.panel_endpoint_section)
+                .setMessage(R.string.panel_endpoint_dialog_msg)
+                .setView(input)
+                .setNegativeButton(R.string.cancel, null)
+                .setPositiveButton(R.string.save,
+                        new DialogInterface.OnClickListener() {
+                            @Override public void onClick(DialogInterface d, int which) {
+                                String url = input.getText().toString().trim();
+                                if (url.startsWith("http://") || url.startsWith("https://")) {
+                                    WidgetPrefs.setPanelEndpoint(
+                                            WidgetCustomizeActivity.this, url);
+                                    updatePanelEndpointState();
+                                    // Light the panel + its widgets up now.
+                                    MusePanelWidgetProvider.poke(
+                                            WidgetCustomizeActivity.this);
+                                }
+                            }
+                        })
+                .create();
+        dialog.show();
+        toBottom(dialog);
     }
 
     private void showShortcutDialog() {

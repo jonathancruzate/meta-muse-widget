@@ -129,7 +129,7 @@ public class MusePanelActivity extends Activity {
         PanelDataClient.Result cached = PanelDataClient.loadCache(this);
         if (cached != null) {
             renderPanel(cached);
-        } else if (!PanelDataClient.isConfigured()) {
+        } else if (!PanelDataClient.isConfigured(this)) {
             PanelDataClient.Result r = new PanelDataClient.Result();
             r.status = PanelDataClient.NOT_CONFIGURED;
             renderPanel(r);
@@ -235,7 +235,7 @@ public class MusePanelActivity extends Activity {
      * (design §6).
      */
     private void maybeFetchPanel(boolean force) {
-        if (!PanelDataClient.isConfigured() || fetchInFlight) return;
+        if (!PanelDataClient.isConfigured(this) || fetchInFlight) return;
         long now = System.currentTimeMillis();
         if (!force && lastFetchStartMs > 0 && now - lastFetchStartMs < 5 * 60 * 1000L) return;
         lastFetchStartMs = now;

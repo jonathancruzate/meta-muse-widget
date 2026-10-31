@@ -191,7 +191,7 @@ public class MusePanelWidgetProvider extends AppWidgetProvider {
         PanelDataClient.Result cached = PanelDataClient.loadCache(ctx);
         if (cached != null) return cached;
         PanelDataClient.Result r = new PanelDataClient.Result();
-        r.status = PanelDataClient.isConfigured()
+        r.status = PanelDataClient.isConfigured(ctx)
                 ? PanelDataClient.FAILED : PanelDataClient.NOT_CONFIGURED;
         return r;
     }
@@ -204,7 +204,7 @@ public class MusePanelWidgetProvider extends AppWidgetProvider {
      */
     private void refreshAsync(final Context context, final AppWidgetManager manager,
                               final int[] appWidgetIds) {
-        if (!PanelDataClient.isConfigured() || appWidgetIds.length == 0) return;
+        if (!PanelDataClient.isConfigured(context) || appWidgetIds.length == 0) return;
         final PendingResult pending = goAsync();
         final Context appCtx = context.getApplicationContext();
         new Thread(new Runnable() {

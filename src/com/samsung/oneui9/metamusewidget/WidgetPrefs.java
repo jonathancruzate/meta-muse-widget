@@ -52,6 +52,32 @@ public final class WidgetPrefs {
     }
 
     private static final String KEY_STEPHANY_UNLOCKED = "stephany_unlocked";
+    private static final String KEY_PANEL_ENDPOINT = "panel_endpoint_url";
+
+    /**
+     * The panel's live-data endpoint URL, configured by the user in
+     * the Customize screen (Settings → Panel data endpoint). The app
+     * ships with NONE configured: the panel and the panel widget
+     * show their "not configured" state until the user pastes their
+     * own URL. The URL is opaque to the app — it is whatever the
+     * user's own Muse setup serves the panel JSON from — and it
+     * lives only in these preferences, never in source or the APK.
+     */
+    public static String panelEndpoint(Context ctx) {
+        String url = prefs(ctx).getString(KEY_PANEL_ENDPOINT, "");
+        return url != null ? url.trim() : "";
+    }
+
+    public static void setPanelEndpoint(Context ctx, String url) {
+        prefs(ctx).edit()
+                .putString(KEY_PANEL_ENDPOINT, url != null ? url.trim() : "")
+                .apply();
+    }
+
+    public static void clearPanelEndpoint(Context ctx) {
+        prefs(ctx).edit().remove(KEY_PANEL_ENDPOINT).apply();
+    }
+
 
     /** Bar style: the One UI (Finder) bar or the Pixel (Material
      * You) bar — independent of the color theme. */

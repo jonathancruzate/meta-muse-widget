@@ -16,14 +16,15 @@ import java.net.URL;
  * Read-only client for the Muse panel's live-data lane (v4.7.0,
  * LIVE-DATA-LANE-DESIGN.md §4–§6).
  *
- * Fetches ONE merged JSON (Daily Brief distillate + house mode) from
- * the mode-sync Worker's capability-gated /panel-data/v1/&lt;slug&gt;
- * endpoint. The URL — slug included — is not in source: build.sh
- * generates PanelConfig from a local 0600 file at build time, and an
- * empty URL means this build carries no live-data link (the panel
- * shows its "not configured" state). No Worker credential of any
- * kind is ever held by this class; the slug opens this read-only,
- * pre-redacted payload and nothing else.
+ * Fetches ONE merged JSON (Daily Brief distillate + house mode)
+ * from the panel-data endpoint THE USER configured in the
+ * Customize screen (Settings \u2192 Panel data endpoint), stored in
+ * SharedPreferences ({@link WidgetPrefs#panelEndpoint}). The app
+ * ships with no endpoint at all: nothing is baked into source or
+ * the APK (v4.9.1 removed the old build-time slug injection), and
+ * an unset preference means the panel shows its "not configured"
+ * state. The pasted URL is treated as an opaque whole; no Worker
+ * credential of any kind is held by this class.
  *
  * The last good response is cached in app-private storage with the
  * client-side fetch time. The cache is a failure fallback, never a
@@ -55,9 +56,9 @@ final class PanelDataClient {
 
     private PanelDataClient() {}
 
-    static boolean isConfigured() {
-        return PanelConfig.PANEL_DATA_URL != null
-                && !PanelConfig.PANEL_DATA_URL.isEmpty();
+    /** Configured = the user has pasted an endpoint URL in Settings. */
+    static boolean isConfigured(Context ctx) {
+        return !WidgetPrefs.panelEndpoint(ctx).isEmpty();
     }
 
     /**
@@ -68,18 +69,19 @@ final class PanelDataClient {
      */
     static Result fetch(Context ctx) {
         Result r = new Result();
-        if (!isConfigured()) {
+        String endpoint = WidgetPrefs.panelEndpoint(ctx);
+        if (endpoint.isEmpty()) {
             r.status = NOT_CONFIGURED;
             return r;
         }
         HttpURLConnection conn = null;
         try {
-            conn = (HttpURLConnection) new URL(PanelConfig.PANEL_DATA_URL).openConnection();
+            conn = (HttpURLConnection) new URL(endpoint).openConnection();
             conn.setConnectTimeout(TIMEOUT_MS);
             conn.setReadTimeout(TIMEOUT_MS);
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
-            conn.setRequestProperty("User-Agent", "MuseWidget/4.9.0");
+            conn.setRequestProperty("User-Agent", "MuseWidget/4.9.1");
             int code = conn.getResponseCode();
             if (code == 404 || code == 403) {
                 r.status = LINK_EXPIRED;
