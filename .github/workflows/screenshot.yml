@@ -59,12 +59,7 @@ jobs:
             sleep 1
             adb shell uiautomator dump /sdcard/dump_pixel.xml || true
             adb pull /sdcard/dump_pixel.xml dump_pixel.xml || true
-            python3 - <<'PYEOF' > coords.txt || true
-            import re
-            d = open('dump_pixel.xml').read()
-            m = re.search(r'barstyle_pixel"[^>]*bounds="\[(\d+),(\d+)\]\[(\d+),(\d+)\]"', d)
-            print(((int(m.group(1)) + int(m.group(3))) // 2, (int(m.group(2)) + int(m.group(4))) // 2) if m else 'NOTFOUND')
-            PYEOF
+            python3 -c 'import re; d = open("dump_pixel.xml").read(); m = re.search("barstyle_pixel[^>]*bounds=.\\[(\\d+),(\\d+)\\]\\[(\\d+),(\\d+)\\]", d); print(((int(m.group(1)) + int(m.group(3))) // 2, (int(m.group(2)) + int(m.group(4))) // 2) if m else "NOTFOUND")' > coords.txt || true
             cat coords.txt
             COORDS=$(tr -d '(),' < coords.txt)
             if [ "$COORDS" != "NOTFOUND" ] && [ -n "$COORDS" ]; then
