@@ -17,7 +17,7 @@ env:
   RELEASE_TAG: v4.10.0
   APK_NAME: Muse-Widget-4.10.0.apk
   APK_SHA256: 73c984155a8c735b45fe912860d82f5951531def77ea72b3de3d8a686b887d45
-  APP_ID: com.samsung.oneui9.metamusewidget
+  APP_ID: com.jonathancruzate.metamusewidget
 
 jobs:
   screenshot:
