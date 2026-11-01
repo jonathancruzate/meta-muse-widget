@@ -40,3 +40,6 @@ repository's default retention period.
 Edit the `env` block at the top of `.github/workflows/screenshot.yml`:
 set `RELEASE_TAG`, `APK_NAME`, and `APK_SHA256` to the new release's
 tag, asset filename, and the SHA-256 published in its release notes.
+
+## Execution model (learned 2026-10-31, runs #1–#4)
+`reactivecircus/android-emulator-runner` executes its `script:` block line-by-line, each line in a separate `/usr/bin/sh -c` process: shell variables do not persist between lines, and multi-line constructs (quoted strings, heredocs, if-blocks) break. The workflow's script block is therefore a single line — `bash scripts/capture-screenshots.sh` — and all stateful capture logic (install, launch, UI-dump parse with a measured-coordinate fallback, taps, screencaps) lives in that script file, where normal bash semantics apply.
