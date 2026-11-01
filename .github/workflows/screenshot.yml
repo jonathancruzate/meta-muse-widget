@@ -1,0 +1,93 @@
+name: Widget screenshots
+
+# Captures genuine emulator screenshots of the Muse Widget Customize
+# screen using the *shipped* release APK (not a debug build), on a
+# KVM-accelerated GitHub-hosted runner. See docs/SCREENSHOT-CI.md.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/screenshot.yml
+
+env:
+  # Pinned to the latest GitHub Release at the time this workflow was
+  # added. Update these two values when a newer release ships.
+  RELEASE_TAG: v4.10.0
+  APK_NAME: Muse-Widget-4.10.0.apk
+  APK_SHA256: 73c984155a8c735b45fe912860d82f5951531def77ea72b3de3d8a686b887d45
+  APP_ID: com.samsung.oneui9.metamusewidget
+
+jobs:
+  screenshot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - uses: actions/checkout@v4
+
+      - name: Download the release APK
+        run: |
+          curl -L -o muse-widget.apk "https://github.com/${{ github.repository }}/releases/download/${RELEASE_TAG}/${APK_NAME}"
+          echo "${APK_SHA256}  muse-widget.apk" | sha256sum -c -
+          ls -l muse-widget.apk
+
+      - name: Run emulator and capture the Customize screen
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_7
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
+          disable-animations: true
+          script: |
+            adb install -r muse-widget.apk
+            adb shell am start -n "$APP_ID/.WidgetCustomizeActivity"
+            sleep 8
+            adb shell uiautomator dump /sdcard/window_dump.xml || true
+            adb pull /sdcard/window_dump.xml window_dump.xml || true
+            if grep -q "$APP_ID" window_dump.xml; then echo "Customize screen confirmed in UI dump"; else echo "WARNING: app package not found in UI dump"; fi
+            adb exec-out screencap -p > screenshot-oneui.png
+            ls -l screenshot-oneui.png
+            adb shell input swipe 540 1900 540 800 350 || true
+            sleep 1
+            adb shell uiautomator dump /sdcard/dump_pixel.xml || true
+            adb pull /sdcard/dump_pixel.xml dump_pixel.xml || true
+            python3 -c "
+            import re
+            d = open('dump_pixel.xml').read()
+            m = re.search(r'barstyle_pixel\"[^>]*bounds=\"\[(\d+),(\d+)\]\[(\d+),(\d+)\]\"', d)
+            print(((int(m.group(1)) + int(m.group(3))) // 2, (int(m.group(2)) + int(m.group(4))) // 2) if m else 'NOTFOUND')
+            " > coords.txt || true
+            cat coords.txt
+            COORDS=$(tr -d '(),' < coords.txt)
+            if [ "$COORDS" != "NOTFOUND" ] && [ -n "$COORDS" ]; then
+              set -- $COORDS
+              echo "Tapping Pixel bar-style radio at $1 $2"
+              adb shell input tap "$1" "$2"
+              sleep 2
+              adb shell input swipe 540 800 540 1900 350 || true
+              adb shell input swipe 540 800 540 1900 350 || true
+              sleep 1
+              adb exec-out screencap -p > screenshot-pixel.png
+              ls -l screenshot-pixel.png
+            else
+              echo "Pixel radio not found in dump; skipping Pixel screenshot"
+            fi
+
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: widget-screenshots
+          path: |
+            screenshot-oneui.png
+            screenshot-pixel.png
+            window_dump.xml
+          if-no-files-found: warn
