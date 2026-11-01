@@ -2,7 +2,26 @@
 
 Home-screen widget and **Muse companion layer** for **Muse from Meta**
 (`com.facebook.aura`) on Samsung Galaxy devices, running on stock
-One UI Home. Current release: **v4.12.0**.
+One UI Home. Current release: **v4.12.1**.
+
+## v4.12.1 — only working shortcuts ship; Voice is Voice again
+
+- **Removed every nonfunctional URI shortcut.** The in-app
+  catalog carried all 71 REA-catalogued Muse URIs, 44 of
+  which are gated to Meta-signed apps and could only ever
+  copy their URI instead of opening anything. The catalog
+  now holds exactly the 27 working activities; the full REA
+  catalog remains in this repo's git history and `refs/`.
+  The copy-a-URI path and its dead helpers went with them.
+  The Activities picker is unchanged — same 27 rows.
+- **The v4.12.0 activity "Voice mode" is labeled "Voice"
+  again** — same behavior (it toggles Muse voice mode
+  through the Muse Voice Mode Shortcut app's accessibility
+  service). Assignments saved under the "Voice mode" label
+  still resolve.
+- Installs over v4.12.0 in place (same package, same
+  signing key). APK SHA-256
+  `c33bcb5385d3f4d1cbe38b4e009ce4bff1a1b248a837382734abbcf03fa0e32d`.
 
 ## v4.12.0 — Voice mode, via the accessibility workaround
 

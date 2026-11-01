@@ -2,8 +2,6 @@ package com.jonathancruzate.metamusewidget;
 
 import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -34,9 +32,9 @@ import android.widget.Toast;
  *     com.facebook.aura.extra.ASSIST_QUERY prefills the composer.
  *     This is the surface built for third-party assistants.
  *   - A plain app launch.
- * Everything else in the catalog is reference material: tapping
- * copies the URI (they still work from Meta's own apps and inside
- * Muse itself).
+ * The catalog (UriCatalog) holds only destinations that work
+ * through those surfaces; the gated URI destinations whose only
+ * behavior was copying the URI were removed in v4.12.1.
  */
 public final class Router {
 
@@ -99,12 +97,6 @@ public final class Router {
                 Toast.makeText(ctx, R.string.voice_shortcut_missing, Toast.LENGTH_LONG).show();
                 if (assist(ctx, null)) return;
                 break;
-            case UriCatalog.MODE_COPY:
-                if (uri != null) {
-                    copy(ctx, uri);
-                    return;
-                }
-                break;
             case UriCatalog.MODE_HUB:
                 ctx.startActivity(new Intent(ctx, WidgetCustomizeActivity.class)
                         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
@@ -123,12 +115,6 @@ public final class Router {
         if (launchApp(ctx)) return;
         if (tryView(ctx, "market://details?id=" + MUSE_PACKAGE)) return;
         Toast.makeText(ctx, R.string.not_found, Toast.LENGTH_LONG).show();
-    }
-
-    public static void copy(Context ctx, String text) {
-        ClipboardManager cm = (ClipboardManager) ctx.getSystemService(Context.CLIPBOARD_SERVICE);
-        if (cm != null) cm.setPrimaryClip(ClipData.newPlainText("Muse URI", text));
-        Toast.makeText(ctx, R.string.copied_gate, Toast.LENGTH_LONG).show();
     }
 
     /**

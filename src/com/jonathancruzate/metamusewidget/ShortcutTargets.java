@@ -12,9 +12,9 @@ import android.content.Intent;
  *
  *   - ASK activities open the ask page with their prompt stem
  *     prefilled (the picker's own behavior), in a fresh task.
- *   - DIRECT activities (Voice mode, Assistant, Open Muse app)
- *     ride the LaunchMuseActivity trampoline. Voice mode hands
- *     off to the Muse Voice Mode Shortcut app's accessibility
+ *   - DIRECT activities (Voice, Assistant, Open Muse app)
+ *     ride the LaunchMuseActivity trampoline. Voice hands off
+ *     to the Muse Voice Mode Shortcut app's accessibility
  *     toggle (v4.12.0); the rest use Router's ungated surfaces.
  *
  * Nothing here fires a catalog URI: Muse gates those by caller
@@ -27,7 +27,7 @@ public final class ShortcutTargets {
     public static Intent intentFor(Context ctx, UriCatalog.Entry e) {
         if (UriCatalog.pickerAction(e) == UriCatalog.PICKER_DIRECT) {
             Intent i = new Intent(ctx, LaunchMuseActivity.class);
-            int mode = "Voice mode".equals(e.label) ? UriCatalog.MODE_VOICE_MODE
+            int mode = "Voice".equals(e.label) ? UriCatalog.MODE_VOICE_MODE
                     : "Assistant".equals(e.label) ? UriCatalog.MODE_ASSIST
                     : UriCatalog.MODE_LAUNCH;
             i.putExtra(Router.EXTRA_MODE, mode);
@@ -47,9 +47,10 @@ public final class ShortcutTargets {
     /** Resolve a stored shortcut-panel cell label to its entry. */
     public static UriCatalog.Entry entryForLabel(String label) {
         if (label == null) return null;
-        // v4.12.0 renamed the "Voice" activity to "Voice mode";
-        // assignments stored under the old label keep resolving.
-        if ("Voice".equals(label)) label = "Voice mode";
+        // v4.12.0 briefly labeled the activity "Voice mode"
+        // (canonical again: "Voice", v4.12.1); assignments stored
+        // under that label keep resolving.
+        if ("Voice mode".equals(label)) label = "Voice";
         for (UriCatalog.Entry e : UriCatalog.pickerEntries()) {
             if (e.label.equals(label)) return e;
         }
