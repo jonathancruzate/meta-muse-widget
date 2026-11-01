@@ -1,0 +1,428 @@
+package com.jonathancruzate.metamusewidget;
+
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+/**
+ * Widget settings, edited from the hub's Widget settings card:
+ * the color theme (One UI spec palette vs the system palette from
+ * Material You / Samsung color palette) and the search-bar widget's
+ * right-hand shortcut (any catalog URI, a custom URI, or hidden).
+ */
+public final class WidgetPrefs {
+
+    private static final String FILE = "widget_prefs";
+    private static final String KEY_THEME = "theme_mode";
+    private static final String KEY_SHORTCUT_URI = "shortcut_uri";
+    private static final String KEY_SHORTCUT_LABEL = "shortcut_label";
+    private static final String KEY_CUSTOM_HUE = "custom_hue";
+    private static final String KEY_CUSTOM_SAT = "custom_sat";
+    private static final String KEY_TRANSPARENCY = "transparency";
+
+    public static final String THEME_ONEUI = "oneui";
+    public static final String THEME_SYSTEM = "system";
+    public static final String THEME_STEPHANY = "stephany";
+    public static final String THEME_CUSTOM = "custom";
+
+    private static final String KEY_BAR_STYLE = "bar_style";
+    public static final String BAR_STYLE_ONEUI = "oneui";
+    public static final String BAR_STYLE_PIXEL = "pixel";
+    public static final String DEFAULT_SHORTCUT_URI = "hatch://search";
+    public static final String DEFAULT_SHORTCUT_LABEL = "Search";
+
+    private WidgetPrefs() {}
+
+    private static SharedPreferences prefs(Context ctx) {
+        return ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE);
+    }
+
+    public static String themeMode(Context ctx) {
+        return prefs(ctx).getString(KEY_THEME, THEME_ONEUI);
+    }
+
+    public static boolean systemTheme(Context ctx) {
+        return THEME_SYSTEM.equals(themeMode(ctx));
+    }
+
+    public static void setTheme(Context ctx, String mode) {
+        prefs(ctx).edit().putString(KEY_THEME, mode).apply();
+    }
+
+    private static final String KEY_STEPHANY_UNLOCKED = "stephany_unlocked";
+    private static final String KEY_PANEL_ENDPOINT = "panel_endpoint_url";
+
+    /**
+     * The panel's live-data endpoint URL, configured by the user in
+     * the Customize screen (Settings → Panel data endpoint). The app
+     * ships with NONE configured: the panel and the panel widget
+     * show their "not configured" state until the user pastes their
+     * own URL. The URL is opaque to the app — it is whatever the
+     * user's own Muse setup serves the panel JSON from — and it
+     * lives only in these preferences, never in source or the APK.
+     */
+    public static String panelEndpoint(Context ctx) {
+        String url = prefs(ctx).getString(KEY_PANEL_ENDPOINT, "");
+        return url != null ? url.trim() : "";
+    }
+
+    public static void setPanelEndpoint(Context ctx, String url) {
+        prefs(ctx).edit()
+                .putString(KEY_PANEL_ENDPOINT, url != null ? url.trim() : "")
+                .apply();
+    }
+
+    public static void clearPanelEndpoint(Context ctx) {
+        prefs(ctx).edit().remove(KEY_PANEL_ENDPOINT).apply();
+    }
+
+
+    /** Bar style: the One UI (Finder) bar or the Pixel (Material
+     * You) bar — independent of the color theme. */
+    public static String barStyle(Context ctx) {
+        return prefs(ctx).getString(KEY_BAR_STYLE, BAR_STYLE_ONEUI);
+    }
+
+    public static void setBarStyle(Context ctx, String style) {
+        prefs(ctx).edit().putString(KEY_BAR_STYLE, style).apply();
+    }
+
+    /** The Stephany theme is a hidden option: the pickers show it
+     * only once it has been unlocked (or while it is active). */
+    public static boolean stephanyUnlocked(Context ctx) {
+        return prefs(ctx).getBoolean(KEY_STEPHANY_UNLOCKED, false);
+    }
+
+    public static void setStephanyUnlocked(Context ctx, boolean v) {
+        prefs(ctx).edit().putBoolean(KEY_STEPHANY_UNLOCKED, v).apply();
+    }
+
+    /** Custom-theme hue, 0-359 (default: One UI blue family). */
+    public static int customHue(Context ctx) {
+        return prefs(ctx).getInt(KEY_CUSTOM_HUE, 205);
+    }
+
+    public static void setCustomHue(Context ctx, int hue) {
+        prefs(ctx).edit().putInt(KEY_CUSTOM_HUE, hue).apply();
+    }
+
+    /** Custom-theme saturation, 0-100. */
+    public static int customSat(Context ctx) {
+        return prefs(ctx).getInt(KEY_CUSTOM_SAT, 70);
+    }
+
+    public static void setCustomSat(Context ctx, int sat) {
+        prefs(ctx).edit().putInt(KEY_CUSTOM_SAT, sat).apply();
+    }
+
+    /** Bar transparency, 0 (opaque) to 90, Google-widget style. */
+    public static int transparency(Context ctx) {
+        return prefs(ctx).getInt(KEY_TRANSPARENCY, 0);
+    }
+
+    public static void setTransparency(Context ctx, int value) {
+        prefs(ctx).edit().putInt(KEY_TRANSPARENCY, value).apply();
+    }
+
+    // The bar's right-hand shortcut is an ACTION now, not a URI:
+    // Muse gates every payload URI by caller signature (see
+    // Router), so the working choices are the assist surface and a
+    // plain launch. Stored URIs from earlier versions migrate:
+    // assist-family URIs -> ASSIST, anything else -> LAUNCH.
+    public static final String SHORTCUT_ASSIST = "assist";
+    public static final String SHORTCUT_LAUNCH = "launch";
+    public static final String SHORTCUT_NONE = "none";
+
+    private static String actionFor(String uri, boolean hidden) {
+        if (hidden) return SHORTCUT_NONE;
+        if (Router.ASSIST_URI.equals(uri) || "widget://assist".equals(uri)
+                || "hatch://thread/new".equals(uri) || "hatch://chat".equals(uri)
+                || (uri != null && uri.startsWith("hatch://search"))) {
+            return SHORTCUT_ASSIST;
+        }
+        return SHORTCUT_LAUNCH;
+    }
+
+    public static String shortcutAction(Context ctx) {
+        return actionFor(prefs(ctx).getString(KEY_SHORTCUT_URI, DEFAULT_SHORTCUT_URI),
+                shortcutHidden(ctx));
+    }
+
+    public static void setShortcutAction(Context ctx, String action) {
+        if (SHORTCUT_NONE.equals(action)) {
+            setShortcut(ctx, null, null);
+        } else if (SHORTCUT_ASSIST.equals(action)) {
+            setShortcut(ctx, "widget://assist", "Assistant");
+        } else {
+            setShortcut(ctx, "widget://launch", "Open app");
+        }
+    }
+
+    public static String shortcutActionLabel(Context ctx) {
+        return shortcutActionLabel(ctx, 0);
+    }
+
+    // ---- Activity targets (v4.10.0) ----
+    // The bar's right button can be ANY picker activity, not just
+    // Assistant / Open app: the choice is stored in the same URI
+    // slot as "widget://activity/<label>". Stored legacy values
+    // (widget://assist, widget://launch, a hatch:// URI, hidden)
+    // keep resolving through actionFor above; an activity value
+    // resolves to its catalog entry here.
+
+    public static final String SHORTCUT_ACTIVITY_PREFIX = "widget://activity/";
+
+    private static String shortcutUriFor(Context ctx, int id) {
+        if (id > 0 && (prefs(ctx).contains(k(KEY_SHORTCUT_URI, id))
+                || prefs(ctx).contains(k(KEY_SHORTCUT_URI, id) + "_hidden"))) {
+            return prefs(ctx).getString(k(KEY_SHORTCUT_URI, id), DEFAULT_SHORTCUT_URI);
+        }
+        return prefs(ctx).getString(KEY_SHORTCUT_URI, DEFAULT_SHORTCUT_URI);
+    }
+
+    /** The picker entry the bar's button is assigned to, or null
+     *  when it carries a legacy action (or is hidden). */
+    public static UriCatalog.Entry shortcutTargetEntry(Context ctx, int id) {
+        if (shortcutHidden(ctx, id)) return null;
+        String uri = shortcutUriFor(ctx, id);
+        if (uri == null || !uri.startsWith(SHORTCUT_ACTIVITY_PREFIX)) return null;
+        return ShortcutTargets.entryForLabel(
+                uri.substring(SHORTCUT_ACTIVITY_PREFIX.length()));
+    }
+
+    public static void setShortcutActivity(Context ctx, int id, String label) {
+        setShortcut(ctx, id, SHORTCUT_ACTIVITY_PREFIX + label, label);
+    }
+
+    // ---- Shortcut panel cells (v4.10.0) ----
+    // The shortcut panel widget's cells: one global ordered set of
+    // picker-activity labels (the panel is a single shared surface,
+    // like the panel endpoint — not per-widget). Stored joined;
+    // an absent key means the starter set, a stored empty string
+    // means the user removed every cell.
+
+    private static final String KEY_PANEL_SHORTCUTS = "panel_shortcuts";
+    private static final String PANEL_SEP = "\u0001";
+    public static final int MAX_PANEL_SHORTCUTS = 8;
+    private static final String[] DEFAULT_PANEL_SHORTCUTS = {
+            "New thread", "Search", "Goals", "Upcoming tasks",
+            "Feed", "Explore", "Memory", "Assistant"};
+
+    public static List<String> panelShortcuts(Context ctx) {
+        List<String> out = new ArrayList<>();
+        String raw = prefs(ctx).getString(KEY_PANEL_SHORTCUTS, null);
+        if (raw == null) {
+            out.addAll(Arrays.asList(DEFAULT_PANEL_SHORTCUTS));
+            return out;
+        }
+        if (!raw.isEmpty()) {
+            for (String s : raw.split(PANEL_SEP)) {
+                if (!s.isEmpty()) out.add(s);
+            }
+        }
+        return out;
+    }
+
+    public static void setPanelShortcuts(Context ctx, List<String> labels) {
+        StringBuilder sb = new StringBuilder();
+        for (String s : labels) {
+            if (sb.length() > 0) sb.append(PANEL_SEP);
+            sb.append(s);
+        }
+        prefs(ctx).edit().putString(KEY_PANEL_SHORTCUTS, sb.toString()).apply();
+    }
+
+    /** The shortcut target URI, or null when the button is hidden. */
+    public static String shortcutUri(Context ctx) {
+        if (shortcutHidden(ctx)) return null;
+        return prefs(ctx).getString(KEY_SHORTCUT_URI, DEFAULT_SHORTCUT_URI);
+    }
+
+    public static String shortcutLabel(Context ctx) {
+        return prefs(ctx).getString(KEY_SHORTCUT_LABEL, DEFAULT_SHORTCUT_LABEL);
+    }
+
+    /** uri == null hides the button. */
+    public static void setShortcut(Context ctx, String uri, String label) {
+        SharedPreferences.Editor ed = prefs(ctx).edit();
+        if (uri == null) {
+            ed.remove(KEY_SHORTCUT_URI).remove(KEY_SHORTCUT_LABEL);
+            ed.putString(KEY_SHORTCUT_URI + "_hidden", "1");
+        } else {
+            ed.putString(KEY_SHORTCUT_URI, uri);
+            ed.putString(KEY_SHORTCUT_LABEL, label != null ? label : uri);
+            ed.remove(KEY_SHORTCUT_URI + "_hidden");
+        }
+        ed.apply();
+    }
+
+    public static boolean shortcutHidden(Context ctx) {
+        return prefs(ctx).contains(KEY_SHORTCUT_URI + "_hidden");
+    }
+
+    // ---- Per-widget overrides ----
+    // Configuring a specific widget writes keys suffixed with its
+    // id; every read falls back to the global value when no
+    // override exists, so placed widgets behave exactly as before
+    // until individually customized. id <= 0 (or
+    // INVALID_APPWIDGET_ID) addresses the global value itself.
+
+    private static String k(String base, int id) { return base + "_" + id; }
+
+    public static String themeMode(Context ctx, int id) {
+        if (id > 0 && prefs(ctx).contains(k(KEY_THEME, id))) {
+            return prefs(ctx).getString(k(KEY_THEME, id), THEME_ONEUI);
+        }
+        return themeMode(ctx);
+    }
+
+    public static String barStyle(Context ctx, int id) {
+        // v4.5.2: per-widget bar_style overrides are IGNORED.
+        // The 4.4.x Pixel widget path is quarantined after it
+        // broke placed widgets; a stale "pixel" override on an
+        // old widget id must never route an update again. The
+        // global value alone decides (in-app surfaces only —
+        // the widget itself renders the One UI path regardless).
+        return barStyle(ctx);
+    }
+
+    /** Drop a placed widget's stored bar_style override (the
+     * provider calls this on every update as a migration scrub). */
+    public static void scrubBarStyle(Context ctx, int id) {
+        if (id > 0 && prefs(ctx).contains(k(KEY_BAR_STYLE, id))) {
+            prefs(ctx).edit().remove(k(KEY_BAR_STYLE, id)).apply();
+        }
+    }
+
+    public static int customHue(Context ctx, int id) {
+        if (id > 0 && prefs(ctx).contains(k(KEY_CUSTOM_HUE, id))) {
+            return prefs(ctx).getInt(k(KEY_CUSTOM_HUE, id), 205);
+        }
+        return customHue(ctx);
+    }
+
+    public static int customSat(Context ctx, int id) {
+        if (id > 0 && prefs(ctx).contains(k(KEY_CUSTOM_SAT, id))) {
+            return prefs(ctx).getInt(k(KEY_CUSTOM_SAT, id), 70);
+        }
+        return customSat(ctx);
+    }
+
+    public static int transparency(Context ctx, int id) {
+        if (id > 0 && prefs(ctx).contains(k(KEY_TRANSPARENCY, id))) {
+            return prefs(ctx).getInt(k(KEY_TRANSPARENCY, id), 0);
+        }
+        return transparency(ctx);
+    }
+
+    public static boolean shortcutHidden(Context ctx, int id) {
+        if (id > 0) {
+            if (prefs(ctx).contains(k(KEY_SHORTCUT_URI, id) + "_hidden")) return true;
+            if (prefs(ctx).contains(k(KEY_SHORTCUT_URI, id))) return false;
+        }
+        return shortcutHidden(ctx);
+    }
+
+    public static String shortcutAction(Context ctx, int id) {
+        if (id > 0 && (prefs(ctx).contains(k(KEY_SHORTCUT_URI, id))
+                || prefs(ctx).contains(k(KEY_SHORTCUT_URI, id) + "_hidden"))) {
+            return actionFor(prefs(ctx).getString(k(KEY_SHORTCUT_URI, id),
+                    DEFAULT_SHORTCUT_URI), shortcutHidden(ctx, id));
+        }
+        return shortcutAction(ctx);
+    }
+
+    public static String shortcutActionLabel(Context ctx, int id) {
+        UriCatalog.Entry e = shortcutTargetEntry(ctx, id);
+        if (e != null) return e.label;
+        String a = shortcutAction(ctx, id);
+        if (SHORTCUT_ASSIST.equals(a)) return "Assistant";
+        if (SHORTCUT_LAUNCH.equals(a)) return "Open app";
+        return "Hidden";
+    }
+
+    public static void setTheme(Context ctx, int id, String mode) {
+        if (id > 0) prefs(ctx).edit().putString(k(KEY_THEME, id), mode).apply();
+        else setTheme(ctx, mode);
+    }
+
+    public static void setBarStyle(Context ctx, int id, String style) {
+        if (id > 0) prefs(ctx).edit().putString(k(KEY_BAR_STYLE, id), style).apply();
+        else setBarStyle(ctx, style);
+    }
+
+    public static void setCustomHue(Context ctx, int id, int hue) {
+        if (id > 0) prefs(ctx).edit().putInt(k(KEY_CUSTOM_HUE, id), hue).apply();
+        else setCustomHue(ctx, hue);
+    }
+
+    public static void setCustomSat(Context ctx, int id, int sat) {
+        if (id > 0) prefs(ctx).edit().putInt(k(KEY_CUSTOM_SAT, id), sat).apply();
+        else setCustomSat(ctx, sat);
+    }
+
+    public static void setTransparency(Context ctx, int id, int value) {
+        if (id > 0) prefs(ctx).edit().putInt(k(KEY_TRANSPARENCY, id), value).apply();
+        else setTransparency(ctx, value);
+    }
+
+    public static void setShortcut(Context ctx, int id, String uri, String label) {
+        if (id <= 0) { setShortcut(ctx, uri, label); return; }
+        SharedPreferences.Editor ed = prefs(ctx).edit();
+        if (uri == null) {
+            ed.remove(k(KEY_SHORTCUT_URI, id)).remove(k(KEY_SHORTCUT_LABEL, id));
+            ed.putString(k(KEY_SHORTCUT_URI, id) + "_hidden", "1");
+        } else {
+            ed.putString(k(KEY_SHORTCUT_URI, id), uri);
+            ed.putString(k(KEY_SHORTCUT_LABEL, id), label != null ? label : uri);
+            ed.remove(k(KEY_SHORTCUT_URI, id) + "_hidden");
+        }
+        ed.apply();
+    }
+
+    public static void setShortcutAction(Context ctx, int id, String action) {
+        if (SHORTCUT_NONE.equals(action)) {
+            setShortcut(ctx, id, null, null);
+        } else if (SHORTCUT_ASSIST.equals(action)) {
+            setShortcut(ctx, id, "widget://assist", "Assistant");
+        } else {
+            setShortcut(ctx, id, "widget://launch", "Open app");
+        }
+    }
+
+    /** Drop a removed widget's overrides. */
+    public static void clearWidget(Context ctx, int id) {
+        if (id <= 0) return;
+        prefs(ctx).edit()
+                .remove(k(KEY_THEME, id))
+                .remove(k(KEY_BAR_STYLE, id))
+                .remove(k(KEY_CUSTOM_HUE, id))
+                .remove(k(KEY_CUSTOM_SAT, id))
+                .remove(k(KEY_TRANSPARENCY, id))
+                .remove(k(KEY_SHORTCUT_URI, id))
+                .remove(k(KEY_SHORTCUT_LABEL, id))
+                .remove(k(KEY_SHORTCUT_URI, id) + "_hidden")
+                .apply();
+    }
+
+    /** Re-render every placed widget after a settings change. */
+    public static void refreshWidgets(Context ctx) {
+        AppWidgetManager manager = AppWidgetManager.getInstance(ctx);
+        Class<?>[] providers = {SearchBarWidgetProvider.class,
+                ShortcutPanelWidgetProvider.class};
+        for (Class<?> provider : providers) {
+            int[] ids = manager.getAppWidgetIds(new ComponentName(ctx, provider));
+            if (ids == null || ids.length == 0) continue;
+            Intent update = new Intent(ctx, provider);
+            update.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+            update.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+            ctx.sendBroadcast(update);
+        }
+    }
+}

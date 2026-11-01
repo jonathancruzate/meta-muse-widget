@@ -7,7 +7,7 @@
      period: settings edits re-render placed panels through
      WidgetPrefs.refreshWidgets. -->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
-    android:configure="com.samsung.oneui9.metamusewidget.WidgetCustomizeActivity"
+    android:configure="com.jonathancruzate.metamusewidget.WidgetCustomizeActivity"
     android:description="@string/widget_shortcuts_name"
     android:initialLayout="@layout/widget_shortcuts"
     android:minWidth="250dp"

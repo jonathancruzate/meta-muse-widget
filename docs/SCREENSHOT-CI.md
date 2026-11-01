@@ -14,7 +14,7 @@ physical device or a local emulator with hardware virtualization.
    installing it. It never builds a debug APK.
 3. Boots an API 35 `google_apis` x86_64 emulator (Pixel 7 profile,
    headless, software GPU), installs the APK, and opens the Customize
-   screen (`com.samsung.oneui9.metamusewidget/.WidgetCustomizeActivity`).
+   screen (`com.jonathancruzate.metamusewidget/.WidgetCustomizeActivity`).
 4. Confirms the app is on screen from a uiautomator dump, then captures:
    - `screenshot-oneui.png` — Customize screen with the default
      One UI bar-style preview.

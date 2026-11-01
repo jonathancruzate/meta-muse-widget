@@ -1,0 +1,131 @@
+package com.jonathancruzate.metamusewidget;
+
+import android.appwidget.AppWidgetManager;
+import android.appwidget.AppWidgetProvider;
+import android.content.Context;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.RemoteViews;
+
+/**
+ * The 4x1 search-bar widget, modeled on the One UI 9 Finder bar:
+ * a matte, borderless pill; a plain glyph on the left; hint text;
+ * one plain action glyph on the right. The pill itself is rendered
+ * as a bitmap by BarStyle, so the Customize settings (theme presets,
+ * Custom hue/saturation, transparency) apply exactly. Tapping the
+ * bar opens a new Muse thread, the compose surface, so the keyboard
+ * comes up ready to type. The right glyph is the customizable
+ * shortcut (its icon mutates to match the destination) and can be
+ * hidden entirely. Tapping the Muse logo on the left just opens
+ * the Muse app.
+ */
+public class SearchBarWidgetProvider extends AppWidgetProvider {
+
+    @Override
+    public void onUpdate(Context context, AppWidgetManager manager, int[] appWidgetIds) {
+        for (int id : appWidgetIds) {
+            updateOne(context, manager, id);
+        }
+    }
+
+    private void updateOne(Context context, AppWidgetManager manager, int id) {
+            // v4.5.2 rollback (swarm verdict, 2026-10-27): the
+            // widget renders exactly the v4.3.2 path — the last
+            // version that worked on-device. Any per-widget
+            // bar_style override left by the 4.4.x Pixel experiment
+            // is scrubbed on sight, and no Pixel code (dynamic
+            // framework-color lookups, bitmap-baked shortcut,
+            // sweep-gradient logo) is reachable from a widget
+            // update. Pixel rendering survives in-app only (the
+            // ask page), quarantined until it is re-proven.
+            WidgetPrefs.scrubBarStyle(context, id);
+            // Per-widget settings (theme, transparency, shortcut),
+            // each falling back to the global value when this
+            // widget was never individually customized.
+            int accent = BarStyle.accent(context, id);
+            String action = WidgetPrefs.shortcutAction(context, id);
+            // v4.10.0: the button can be any picker activity; an
+            // activity assignment wins over the legacy actions.
+            UriCatalog.Entry activityTarget = WidgetPrefs.shortcutTargetEntry(context, id);
+            UriCatalog.Entry shortcut = null;
+            if (WidgetPrefs.SHORTCUT_ASSIST.equals(action)) {
+                shortcut = new UriCatalog.Entry("Widget", "Assistant", Router.ASSIST_URI,
+                        null, null, R.drawable.ic_assistant, false);
+            } else if (WidgetPrefs.SHORTCUT_LAUNCH.equals(action)) {
+                shortcut = new UriCatalog.Entry("Widget", "Open app", null,
+                        null, null, R.drawable.ic_open, false);
+            }
+            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_search_bar);
+            Bundle opts = manager.getAppWidgetOptions(id);
+            int wDp = opts.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, 0);
+            if (wDp <= 0) wDp = opts.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 300);
+            // The pill is Samsung's bar: a fixed 52dp tall, centered in
+            // whatever row the launcher gives the widget. A launcher
+            // search bar is not a widget — it lives in the launcher's
+            // own slimmer container — so filling the whole widget row
+            // (what this used to do) reads far too thick next to it.
+            // The root FrameLayout pads 2dp on every side.
+            views.setImageViewBitmap(R.id.iv_pill_bg,
+                    BarStyle.pillBitmap(context, wDp - 4, 52, id));
+            // The bar's left logo takes the theme's accent tint
+            // (the v4.3.2 treatment, restored in v4.5.2).
+            views.setInt(R.id.iv_muse_logo, "setColorFilter", accent);
+            views.setTextColor(R.id.tv_search_query, BarStyle.hintColor(context));
+            // Tapping the bar opens this app's ask page (type with
+            // suggestions; Enter lands the text in Muse's composer).
+            android.content.Intent compose = new android.content.Intent(
+                    context, ComposeActivity.class);
+            compose.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK
+                    | android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            views.setOnClickPendingIntent(R.id.container_search_bar,
+                    android.app.PendingIntent.getActivity(context, 1000 + id, compose,
+                            android.app.PendingIntent.FLAG_UPDATE_CURRENT
+                                    | android.app.PendingIntent.FLAG_IMMUTABLE));
+            // The logo glyph itself is its own target: tapping it just
+            // opens the Muse app — a plain launch, no ask page. The
+            // click intent goes on iv_muse_logo directly (v4.5.3: the
+            // v4.3.2 transparent overlay hit-view over the glyph is
+            // what broke the widget on One UI Home — v4.3.1, whose
+            // layout has no overlay, is the last known-good; the logo
+            // now takes the click the same way the shortcut glyph
+            // already did in v4.3.1).
+            UriCatalog.Entry openApp = new UriCatalog.Entry("Widget", "Open Muse",
+                    null, null, null, R.drawable.ic_open, false);
+            views.setOnClickPendingIntent(R.id.iv_muse_logo,
+                    Router.routerPendingIntent(context, openApp, 3000 + id));
+            if (activityTarget != null) {
+                views.setViewVisibility(R.id.iv_shortcut, View.VISIBLE);
+                views.setImageViewResource(R.id.iv_shortcut, activityTarget.icon);
+                views.setInt(R.id.iv_shortcut, "setColorFilter", accent);
+                views.setContentDescription(R.id.iv_shortcut, activityTarget.label);
+                views.setOnClickPendingIntent(R.id.iv_shortcut,
+                        android.app.PendingIntent.getActivity(context, 2000 + id,
+                                ShortcutTargets.intentFor(context, activityTarget),
+                                android.app.PendingIntent.FLAG_UPDATE_CURRENT
+                                        | android.app.PendingIntent.FLAG_IMMUTABLE));
+            } else if (shortcut != null) {
+                views.setViewVisibility(R.id.iv_shortcut, View.VISIBLE);
+                views.setImageViewResource(R.id.iv_shortcut, shortcut.icon);
+                views.setInt(R.id.iv_shortcut, "setColorFilter", accent);
+                views.setContentDescription(R.id.iv_shortcut, shortcut.label);
+                views.setOnClickPendingIntent(R.id.iv_shortcut,
+                        Router.routerPendingIntent(context, shortcut, 2000 + id));
+            } else {
+                views.setViewVisibility(R.id.iv_shortcut, View.GONE);
+            }
+            manager.updateAppWidget(id, views);
+    }
+
+    @Override
+    public void onDeleted(Context context, int[] appWidgetIds) {
+        for (int id : appWidgetIds) WidgetPrefs.clearWidget(context, id);
+        super.onDeleted(context, appWidgetIds);
+    }
+
+    @Override
+    public void onAppWidgetOptionsChanged(Context context, AppWidgetManager manager,
+                                          int appWidgetId, Bundle newOptions) {
+        // A resize changes the pill's real size; re-render at it.
+        onUpdate(context, manager, new int[]{appWidgetId});
+    }
+}

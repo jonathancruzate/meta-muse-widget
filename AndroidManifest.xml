@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.samsung.oneui9.metamusewidget">
+    package="com.jonathancruzate.metamusewidget">
 
     <uses-sdk
         android:minSdkVersion="24"
@@ -137,7 +137,7 @@
             android:label="@string/widget_panel_name">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                <action android:name="com.samsung.oneui9.metamusewidget.action.PANEL_WIDGET_REFRESH" />
+                <action android:name="com.jonathancruzate.metamusewidget.action.PANEL_WIDGET_REFRESH" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"

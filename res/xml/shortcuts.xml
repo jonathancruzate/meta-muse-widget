@@ -13,8 +13,8 @@
         android:shortcutShortLabel="@string/ask_title">
         <intent
             android:action="android.intent.action.VIEW"
-            android:targetPackage="com.samsung.oneui9.metamusewidget"
-            android:targetClass="com.samsung.oneui9.metamusewidget.WidgetCustomizeActivity"
+            android:targetPackage="com.jonathancruzate.metamusewidget"
+            android:targetClass="com.jonathancruzate.metamusewidget.WidgetCustomizeActivity"
             android:data="widget://shortcut/ask" />
         <categories android:name="android.shortcut.conversation" />
     </shortcut>
@@ -25,8 +25,8 @@
         android:shortcutShortLabel="@string/muse_companion_short_label">
         <intent
             android:action="android.intent.action.VIEW"
-            android:targetPackage="com.samsung.oneui9.metamusewidget"
-            android:targetClass="com.samsung.oneui9.metamusewidget.WidgetCustomizeActivity"
+            android:targetPackage="com.jonathancruzate.metamusewidget"
+            android:targetClass="com.jonathancruzate.metamusewidget.WidgetCustomizeActivity"
             android:data="widget://shortcut/muse" />
         <categories android:name="android.shortcut.conversation" />
     </shortcut>
@@ -37,8 +37,8 @@
         android:shortcutShortLabel="@string/picker_title">
         <intent
             android:action="android.intent.action.VIEW"
-            android:targetPackage="com.samsung.oneui9.metamusewidget"
-            android:targetClass="com.samsung.oneui9.metamusewidget.WidgetCustomizeActivity"
+            android:targetPackage="com.jonathancruzate.metamusewidget"
+            android:targetClass="com.jonathancruzate.metamusewidget.WidgetCustomizeActivity"
             android:data="widget://shortcut/activities" />
         <categories android:name="android.shortcut.conversation" />
     </shortcut>
@@ -49,8 +49,8 @@
         android:shortcutShortLabel="@string/sc_new">
         <intent
             android:action="android.intent.action.VIEW"
-            android:targetPackage="com.samsung.oneui9.metamusewidget"
-            android:targetClass="com.samsung.oneui9.metamusewidget.WidgetCustomizeActivity"
+            android:targetPackage="com.jonathancruzate.metamusewidget"
+            android:targetClass="com.jonathancruzate.metamusewidget.WidgetCustomizeActivity"
             android:data="widget://shortcut/new" />
         <categories android:name="android.shortcut.conversation" />
     </shortcut>

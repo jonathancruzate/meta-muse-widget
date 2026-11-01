@@ -2,7 +2,24 @@
 
 Home-screen widget and **Muse companion layer** for **Muse from Meta**
 (`com.facebook.aura`) on Samsung Galaxy devices, running on stock
-One UI Home. Current release: **v4.9.1**.
+One UI Home. Current release: **v4.11.0**.
+
+## v4.11.0 — the package and APK now match the project name
+
+- **Package renamed:** `com.samsung.oneui9.metamusewidget` →
+  `com.jonathancruzate.metamusewidget`, so the app's identity
+  matches this GitHub project (`jonathancruzate/meta-muse-widget`).
+  The APK is now `Meta-Muse-Widget-4.11.0.apk` (was
+  `Muse-Widget-<version>.apk`). The app's display name stays
+  **Muse Widget**, and there are no feature changes.
+- **Reinstall required.** A package rename is a new app identity
+  to Android: v4.11.0 does **not** install over v4.10.0 or
+  earlier. Uninstall the old app, install v4.11.0, then re-add
+  the widgets to your home screen and set your preferences
+  again (bar style, theme, shortcut cells, panel endpoint) —
+  the old app's settings do not carry over.
+- Same signing key as every previous release; both build guards
+  (render guard, no-secrets guard) pass.
 
 ## v4.9.1 — Activities picker, and the panel takes your own endpoint
 
@@ -215,7 +232,7 @@ ANDROID_SDK_ROOT=/path/to/sdk ./build.sh
 
 `build.sh` generates a local signing keystore on first run —
 bring your own for anything you ship; the generated one is for
-local installs only. Package: `com.samsung.oneui9.metamusewidget`,
+local installs only. Package: `com.jonathancruzate.metamusewidget`,
 minSdk 24, targetSdk 35.
 
 ## License
