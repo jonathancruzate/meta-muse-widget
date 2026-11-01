@@ -20,7 +20,7 @@ if [ ! -f "$KS" ]; then
   chmod 600 "$KS_PASS_FILE"
   keytool -genkeypair -keystore "$KS" -alias onemuse -keyalg RSA -keysize 2048 \
     -validity 10000 -storepass "$PASS" -keypass "$PASS" \
-    -dname "CN=Meta Muse Widget, O=OneUI9, C=US" 2>/dev/null
+    -dname "CN=Meta Muse Widget, O=JonathanCruzate, C=US" 2>/dev/null
   echo "keystore created"
 fi
 PASS="$(cat "$KS_PASS_FILE")"
@@ -35,7 +35,7 @@ echo "== aapt2 link =="
   --manifest AndroidManifest.xml \
   --java build/gen \
   --min-sdk-version 24 --target-sdk-version 35 \
-  --version-code 38 --version-name "4.11.0" \
+  --version-code 39 --version-name "4.12.0" \
   build/res.zip
 
 echo "== panel endpoint: none (v4.9.1) =="
@@ -131,8 +131,8 @@ echo "no-secrets guard passed"
 echo "== zipalign + sign =="
 "$BT/zipalign" -f 4 build/unsigned.apk build/aligned.apk
 "$BT/apksigner" sign --ks "$KS" --ks-pass "pass:$PASS" --key-pass "pass:$PASS" \
-  --out Meta-Muse-Widget-4.11.0.apk build/aligned.apk
+  --out Meta-Muse-Widget-4.12.0.apk build/aligned.apk
 
 echo "== verify =="
-"$BT/apksigner" verify --print-certs Meta-Muse-Widget-4.11.0.apk
-ls -lh Meta-Muse-Widget-4.11.0.apk
+"$BT/apksigner" verify --print-certs Meta-Muse-Widget-4.12.0.apk
+ls -lh Meta-Muse-Widget-4.12.0.apk

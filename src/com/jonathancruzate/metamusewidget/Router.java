@@ -48,6 +48,11 @@ public final class Router {
     /** Pseudo-URI for the Muse assistant surface (ACTION_ASSIST on the main activity). */
     public static final String ASSIST_URI = "muse://assist";
 
+    /** The Muse Voice Mode Shortcut app and its no-UI toggle activity. */
+    public static final String VOICE_MODE_PACKAGE = "com.jonathancruzate.metamusevoicemodeshortcut";
+    public static final String VOICE_MODE_ACTIVITY =
+            "com.jonathancruzate.metamusevoicemodeshortcut.ShortcutActivity";
+
     /** Fallback packages, inherited from the original widget (v3.0.0). */
     static final String[] TARGET_PACKAGES = {
             "com.facebook.aura",
@@ -89,6 +94,11 @@ public final class Router {
             case UriCatalog.MODE_ASSIST:
                 if (assist(ctx, query)) return;
                 break;
+            case UriCatalog.MODE_VOICE_MODE:
+                if (voiceMode(ctx)) return;
+                Toast.makeText(ctx, R.string.voice_shortcut_missing, Toast.LENGTH_LONG).show();
+                if (assist(ctx, null)) return;
+                break;
             case UriCatalog.MODE_COPY:
                 if (uri != null) {
                     copy(ctx, uri);
@@ -119,6 +129,26 @@ public final class Router {
         ClipboardManager cm = (ClipboardManager) ctx.getSystemService(Context.CLIPBOARD_SERVICE);
         if (cm != null) cm.setPrimaryClip(ClipData.newPlainText("Muse URI", text));
         Toast.makeText(ctx, R.string.copied_gate, Toast.LENGTH_LONG).show();
+    }
+
+    /**
+     * Voice mode via the Muse Voice Mode Shortcut app (v4.12.0):
+     * Muse's hatch://voice deeplink is TrustedCaller-gated, so the
+     * widget hands off to the companion app whose accessibility
+     * service taps Muse's own voice button. Its ShortcutActivity
+     * is a no-UI toggle — each fire flips voice mode on or off.
+     * False when that app is not installed.
+     */
+    public static boolean voiceMode(Context ctx) {
+        try {
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setComponent(new ComponentName(VOICE_MODE_PACKAGE, VOICE_MODE_ACTIVITY));
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            ctx.startActivity(i);
+            return true;
+        } catch (ActivityNotFoundException | SecurityException e) {
+            return false;
+        }
     }
 
     /**

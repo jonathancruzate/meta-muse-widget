@@ -24,7 +24,7 @@ import java.util.List;
  * ("I want to start a goal about ", "I want to start tracking "):
  * finish the sentence, Enter carries it into Muse through the
  * ungated ASSIST_QUERY surface. The few rows whose surface is
- * ungated (Voice, Assistant, a plain app launch) fire directly.
+ * ungated (Voice mode, Assistant, a plain app launch) fire directly.
  *
  * One first-depth screen, built programmatically in the panel's
  * pattern: grouped sections, icon rows with the stem previewed on
@@ -105,9 +105,14 @@ public class PickerActivity extends Activity {
         row.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
                 if (action == UriCatalog.PICKER_DIRECT) {
-                    // Voice and Assistant ride the assist surface;
-                    // Open Muse app is a plain launch (its mode).
-                    if ("Voice".equals(e.label) || "Assistant".equals(e.label)) {
+                    // Voice mode hands off to the voice-shortcut
+                    // app's accessibility toggle; Assistant rides
+                    // the assist surface; Open Muse app is a
+                    // plain launch (its mode).
+                    if ("Voice mode".equals(e.label)) {
+                        Router.dispatch(PickerActivity.this,
+                                UriCatalog.MODE_VOICE_MODE, null, null);
+                    } else if ("Assistant".equals(e.label)) {
                         Router.dispatch(PickerActivity.this,
                                 UriCatalog.MODE_ASSIST, null, null);
                     } else {

@@ -33,6 +33,7 @@ public final class UriCatalog {
     public static final int MODE_HUB = 3;       // open this app's hub
     public static final int MODE_CUSTOMIZE = 4; // open this app's customize screen
     public static final int MODE_COMPOSE = 5;   // open this app's ask page
+    public static final int MODE_VOICE_MODE = 6; // Muse Voice Mode Shortcut toggle (accessibility)
 
     public static final class Entry {
         public final String group;
@@ -90,7 +91,7 @@ public final class UriCatalog {
             tpl("Start", "Thread", "hatch://thread/main", "hatch://thread/<id>", "hatch://chat", R.drawable.ic_chat),
             tpl("Start", "Chat message", "hatch://chat", "hatch://chat?message_id=<id>", null, R.drawable.ic_chat),
             e("Start", "Home", "hatch://home", "https://muse.ai/", R.drawable.ic_home),
-            e("Start", "Voice", "hatch://voice", "hatch://chat", R.drawable.ic_pulse),
+            e("Start", "Voice mode", "hatch://voice", "hatch://chat", R.drawable.ic_mic),
             tpl("Start", "Assistant", Router.ASSIST_URI, "Muse assistant surface (voice and keyboard)", null, R.drawable.ic_pulse),
             e("Start", "Open Muse app", null, null, R.drawable.ic_meta_muse_circle),
 
@@ -181,7 +182,7 @@ public final class UriCatalog {
     // the ungated ASSIST_QUERY surface. A stem ending in a space or
     // colon is meant to be completed; a full sentence can be sent
     // as-is. The few rows whose catalog mode is an ungated surface
-    // (Voice, Assistant, a plain app launch) still fire directly.
+    // (Voice mode, Assistant, a plain app launch) still fire directly.
 
     public static final int PICKER_NONE = -1;   // not a picker row
     public static final int PICKER_ASK = 0;     // ask page, prefilled
@@ -190,7 +191,7 @@ public final class UriCatalog {
     public static int pickerAction(Entry e) {
         String prompt = pickerPrompt(e);
         if (prompt != null) return PICKER_ASK;
-        if ("Voice".equals(e.label) || "Assistant".equals(e.label)
+        if ("Voice mode".equals(e.label) || "Assistant".equals(e.label)
                 || "Open Muse app".equals(e.label)) return PICKER_DIRECT;
         return PICKER_NONE;
     }
@@ -267,8 +268,8 @@ public final class UriCatalog {
                 R.drawable.ic_assistant, false));
         out.add(new Entry("Actions", "Search", "hatch://search", null, null,
                 R.drawable.ic_search, false).withMode(MODE_COMPOSE));
-        out.add(new Entry("Actions", "Voice", "hatch://voice", null, null,
-                R.drawable.ic_mic, false).withMode(MODE_ASSIST));
+        out.add(new Entry("Actions", "Voice mode", "hatch://voice", null, null,
+                R.drawable.ic_mic, false).withMode(MODE_VOICE_MODE));
         out.add(new Entry("Actions", "Open app", null, null, null,
                 R.drawable.ic_open, false));
         out.add(new Entry("Actions", "Copy chat URI", "hatch://chat", null, null,

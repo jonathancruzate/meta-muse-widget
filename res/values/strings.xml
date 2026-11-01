@@ -46,6 +46,7 @@
     <string name="cancel">Cancel</string>
     <string name="muse_logo_desc">Muse logo</string>
     <string name="not_found">Muse from Meta (com.facebook.aura) not found on device</string>
+    <string name="voice_shortcut_missing">Voice mode needs the Muse Voice Mode Shortcut app — opening Muse instead</string>
     <string name="counter_template">%1$d destinations</string>
     <string name="no_results">No matching destination</string>
     <string name="open_muse_search">Ask Muse instead</string>

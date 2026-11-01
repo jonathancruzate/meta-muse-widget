@@ -2,7 +2,29 @@
 
 Home-screen widget and **Muse companion layer** for **Muse from Meta**
 (`com.facebook.aura`) on Samsung Galaxy devices, running on stock
-One UI Home. Current release: **v4.11.0**.
+One UI Home. Current release: **v4.12.0**.
+
+## v4.12.0 — Voice mode, via the accessibility workaround
+
+- **The Voice activity is now "Voice mode" — and it actually
+  enters voice mode.** Muse's `hatch://voice` deeplink is
+  gated to Meta-signed apps, so the old shortcut could only
+  open Muse's assistant surface. Voice mode now hands off to
+  the companion **Muse Voice Mode Shortcut** app
+  (https://github.com/jonathancruzate/muse-voice-mode-shortcut),
+  whose accessibility service taps Muse's own voice button.
+  It's a toggle: each tap of the shortcut flips voice mode on
+  or off — the same switch as that app's side-button mapping.
+- Works everywhere the activity can be assigned: the
+  Activities picker, the shortcut panel widget, the search
+  bar's right button, and the ask page's glyph. Existing
+  assignments stored under the old "Voice" label keep working.
+- If the Muse Voice Mode Shortcut app isn't installed, the
+  shortcut explains itself with a toast and opens Muse's
+  assistant surface instead — never a dead end.
+- Installs over v4.11.0 in place (same package, same signing
+  key). APK SHA-256
+  `7940496792df1ffb7b30ec66427911940a282909475b011c26746c6bbb1614a7`.
 
 ## v4.11.0 — the package and APK now match the project name
 
@@ -18,8 +40,21 @@ One UI Home. Current release: **v4.11.0**.
   the widgets to your home screen and set your preferences
   again (bar style, theme, shortcut cells, panel endpoint) —
   the old app's settings do not carry over.
-- Same signing key as every previous release; both build guards
-  (render guard, no-secrets guard) pass.
+- **New signing key for the new identity.** The legacy keystore's
+  certificate DN still carried the old project's origin
+  (`O=OneUI9`), so v4.11.0 is signed with a fresh keystore whose
+  DN is `CN=Meta Muse Widget, O=JonathanCruzate, C=US`
+  (cert SHA-256
+  `2746d2a2d6dbe0fda4271acd14f4e5ab990da4e9155e7f9e75ae07fca4b814da`).
+  The old keystore is preserved alongside as
+  `keystore/keystore-legacy-oneui9.keystore`. The cert change is
+  free: it happened before the new package
+  (`com.jonathancruzate.metamusewidget`) was ever released or
+  installed, and the old `com.samsung…` package line is abandoned
+  anyway — there is no install or upgrade impact. Both build
+  guards (render guard, no-secrets guard) pass. Final v4.11.0
+  APK: 444,270 bytes, SHA-256
+  `2c3a5dc437153fe96954213b29935083da5beecedce8df22abeb8ed0b71c5780`.
 
 ## v4.9.1 — Activities picker, and the panel takes your own endpoint
 
