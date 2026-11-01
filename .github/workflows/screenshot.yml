@@ -47,25 +47,7 @@ jobs:
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
           disable-animations: true
           script: |
-            adb install -r muse-widget.apk
-            adb shell am start -n "$APP_ID/.WidgetCustomizeActivity"
-            sleep 8
-            adb shell uiautomator dump /sdcard/window_dump.xml || true
-            adb pull /sdcard/window_dump.xml window_dump.xml || true
-            if grep -q "$APP_ID" window_dump.xml; then echo "Customize screen confirmed in UI dump"; else echo "WARNING: app package not found in UI dump"; fi
-            adb exec-out screencap -p > screenshot-oneui.png
-            ls -l screenshot-oneui.png
-                        python3 -c 'import re; d = open("window_dump.xml").read(); m = re.search("barstyle_pixel[^>]*bounds=.\\[(\\d+),(\\d+)\\]\\[(\\d+),(\\d+)\\]", d); print(((int(m.group(1)) + int(m.group(3))) // 2, (int(m.group(2)) + int(m.group(4))) // 2) if m else "NOTFOUND")' > coords.txt || true
-                        cat coords.txt
-                        COORDS=$(tr -d '(),' < coords.txt)
-                        if [ "$COORDS" = "NOTFOUND" ] || [ -z "$COORDS" ]; then echo "Dump parse missed; using verified fallback tap 394 1037"; COORDS="394 1037"; fi
-                        set -- $COORDS
-                        echo "Tapping Pixel bar-style radio at $1 $2"
-                        adb shell input tap "$1" "$2"
-                        sleep 2
-                        adb exec-out screencap -p > screenshot-pixel.png
-                        ls -l screenshot-pixel.png
-
+              bash scripts/capture-screenshots.sh
       - name: Upload screenshots
         if: always()
         uses: actions/upload-artifact@v4
