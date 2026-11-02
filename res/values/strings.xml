@@ -111,4 +111,14 @@
     <string name="panel_age_min">%1$d min ago</string>
     <string name="panel_age_hours">%1$d h ago</string>
     <string name="panel_age_days">%1$d d ago</string>
+    <!-- Voice mode setup (v4.12.2): the Voice activity runs on the
+         Muse Voice Mode Shortcut app's accessibility service; this
+         section surfaces its state and the one-tap enable path,
+         the same pattern as the other Muse companion apps. -->
+    <string name="voice_section">Voice mode</string>
+    <string name="voice_a11y_hint">The Voice shortcut works through the Muse Voice Mode Shortcut app: its accessibility service taps Muse\'s voice button for you. Enable that service once and Voice just works.</string>
+    <string name="voice_a11y_enable">Enable accessibility service</string>
+    <string name="voice_a11y_on">Accessibility service: ON — Voice is ready</string>
+    <string name="voice_a11y_off">Accessibility service: OFF — Voice won\'t work until it\'s on</string>
+    <string name="voice_a11y_missing">Muse Voice Mode Shortcut isn\'t installed — install it, then enable its accessibility service</string>
 </resources>

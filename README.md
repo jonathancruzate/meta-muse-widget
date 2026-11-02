@@ -2,7 +2,28 @@
 
 Home-screen widget and **Muse companion layer** for **Muse from Meta**
 (`com.facebook.aura`) on Samsung Galaxy devices, running on stock
-One UI Home. Current release: **v4.12.1**.
+One UI Home. Current release: **v4.12.2**.
+
+## v4.12.2 — Voice mode setup: enable-accessibility button
+
+- **New "Voice mode" section on the Customize screen.** The
+  Voice activity runs through the companion **Muse Voice Mode
+  Shortcut** app — its accessibility service is what taps
+  Muse's voice button — but until now this app gave no way to
+  turn that service on. The new section shows the service's
+  state (ON / OFF / companion app not installed) and, while it
+  is off, an **Enable accessibility service** button that
+  opens Android's Accessibility settings — the same pattern
+  as the other Muse companion apps (Muse Voice Mode
+  Shortcut, Muse for Android Auto). The button hides itself
+  once the service is on; the state re-checks every time the
+  screen resumes, so returning from Settings shows the result.
+- One clarification this makes visible: the widget itself has
+  no accessibility service — the service belongs to the Muse
+  Voice Mode Shortcut app, and the button enables that one.
+- Installs over v4.12.1 in place (same package, same signing
+  key). APK SHA-256
+  `c431e858d0fdccdfe640f8dff20d649ec82dad3477b7b9b97942cfda06025f1c`.
 
 ## v4.12.1 — only working shortcuts ship; Voice is Voice again
 

@@ -415,6 +415,50 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
                 android:text="@string/add_shortcut" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="14dp"
+                android:background="@color/divider" />
+
+            <!-- Voice mode setup (v4.12.2): the Voice activity runs
+                 on the Muse Voice Mode Shortcut app's accessibility
+                 service. Same pattern as the other Muse companion
+                 apps: a status line plus a one-tap button into
+                 Accessibility settings, shown while the service is
+                 off (or the companion app is missing). -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:text="@string/voice_section"
+                android:textColor="@color/foreground"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="@string/voice_a11y_hint"
+                android:textColor="@color/secondary"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/voice_a11y_state"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:textColor="@color/secondary"
+                android:textSize="13sp" />
+
+            <Button
+                android:id="@+id/voice_a11y_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="@string/voice_a11y_enable" />
         </LinearLayout>
     </ScrollView>
 

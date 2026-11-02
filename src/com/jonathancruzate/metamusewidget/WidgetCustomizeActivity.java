@@ -5,6 +5,8 @@ import android.app.AlertDialog;
 import android.appwidget.AppWidgetManager;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.provider.Settings;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.View;
@@ -45,6 +47,8 @@ public class WidgetCustomizeActivity extends Activity {
     private TextView previewHint;
     private TextView shortcutValue;
     private TextView panelEndpointState;
+    private TextView voiceA11yState;
+    private View voiceA11yButton;
     private android.widget.LinearLayout panelShortcutsContainer;
     private View panelShortcutAddButton;
     private View customSection;
@@ -202,6 +206,14 @@ public class WidgetCustomizeActivity extends Activity {
             @Override public void onClick(View v) { showPanelShortcutAddDialog(); }
         });
         renderPanelShortcuts();
+        voiceA11yState = findViewById(R.id.voice_a11y_state);
+        voiceA11yButton = findViewById(R.id.voice_a11y_button);
+        voiceA11yButton.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) {
+                startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
+            }
+        });
+        updateVoiceA11yState();
         findViewById(R.id.done_button).setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
                 WidgetPrefs.refreshWidgets(WidgetCustomizeActivity.this);
@@ -282,6 +294,61 @@ public class WidgetCustomizeActivity extends Activity {
         String host = android.net.Uri.parse(url).getHost();
         panelEndpointState.setText(host != null && !host.isEmpty()
                 ? "Configured \u00b7 " + host : "Configured");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // The user may be returning from Accessibility settings.
+        updateVoiceA11yState();
+    }
+
+    /**
+     * Voice mode setup row (v4.12.2): the widget's Voice activity
+     * hands off to the Muse Voice Mode Shortcut app, whose
+     * accessibility service taps Muse's voice button — the widget
+     * itself has no accessibility service. Same pattern as the
+     * other Muse companion apps: show the state, and show the
+     * "Enable accessibility service" button (into Android's
+     * Accessibility settings) only while the service is off or
+     * the companion app is missing.
+     */
+    private void updateVoiceA11yState() {
+        if (voiceA11yState == null || voiceA11yButton == null) return;
+        if (!voiceModeAppInstalled()) {
+            voiceA11yState.setText(R.string.voice_a11y_missing);
+            voiceA11yButton.setVisibility(View.GONE);
+        } else if (voiceModeA11yEnabled()) {
+            voiceA11yState.setText(R.string.voice_a11y_on);
+            voiceA11yButton.setVisibility(View.GONE);
+        } else {
+            voiceA11yState.setText(R.string.voice_a11y_off);
+            voiceA11yButton.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private boolean voiceModeAppInstalled() {
+        try {
+            getPackageManager().getPackageInfo(Router.VOICE_MODE_PACKAGE, 0);
+            return true;
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
+    }
+
+    private boolean voiceModeA11yEnabled() {
+        try {
+            String enabled = Settings.Secure.getString(getContentResolver(),
+                    Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
+            if (enabled == null) return false;
+            // The setting stores flattened component names, in the
+            // short ("pkg/.Class") or full ("pkg/pkg.Class") form.
+            return enabled.contains(Router.VOICE_MODE_PACKAGE + "/.VoiceAccessibilityService")
+                    || enabled.contains(Router.VOICE_MODE_PACKAGE + "/"
+                            + Router.VOICE_MODE_PACKAGE + ".VoiceAccessibilityService");
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     /** The ONLY configuration path for the panel endpoint: paste
