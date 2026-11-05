@@ -25,7 +25,7 @@ Hook point (brief lane is agent-run cron jobs, no shell hook):
 append one step to the brief compile/refresh job bodies
 (daily-brief-compile, daily-brief-refresh-*, midday-brief,
 evening-brief): "After writing dashboard_snapshot.json, run
-~/workspace/metamuse-widget/tools/panel-brief-push.py and ignore
+~/workspace/meta-muse-widget/tools/panel-brief-push.py and ignore
 its exit code." Until that step is added, run this script manually
 after any brief refresh.
 
