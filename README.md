@@ -4,6 +4,22 @@ Home-screen widget and **Muse companion layer** for **Muse from Meta**
 (`com.facebook.aura`) on Samsung Galaxy devices, running on stock
 One UI Home. Current release: **v4.12.2**.
 
+## Status note — 2026-11-07: the Panel widget steps aside; the app stays
+
+Muse now ships its own home-screen widgets for Spaces. On
+2026-11-07 the project's owner replaced the **Muse Panel widget**
+on his home screen with those native Spaces widgets (the Daily
+Brief space widget is the one in place), so the Panel widget is
+no longer his primary home-screen surface.
+
+**The app is not retired.** It is kept — and still maintained —
+for the surfaces the native widgets don't cover: the **search
+bar widget** and the **shortcut system** (shortcut panel,
+Activities picker, app-icon and QS-tile shortcuts). The Panel
+widget and the Muse companion panel remain in the app as built;
+only their place on one home screen changed. No code changes in
+this note.
+
 ## v4.12.2 — Voice mode setup: enable-accessibility button
 
 - **New "Voice mode" section on the Customize screen.** The

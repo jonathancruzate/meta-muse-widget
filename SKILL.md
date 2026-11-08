@@ -3,8 +3,16 @@
 The widget and companion app Muse built for Jonathan's Galaxy S24+:
 a search-bar widget, a live Muse panel (activity + widget), and an
 activities shortcut system for the Muse app (`com.facebook.aura`),
-all on stock One UI Home — Muse ships no widgets of its own, so this
-app is the home-screen surface. Project:
+all on stock One UI Home. It was built when Muse shipped no widgets
+of its own. **Placement status (2026-11-07): Muse now ships native
+Spaces widgets, and Jonathan replaced the Muse Panel widget on his
+home screen with them — the Daily Brief space widget is the one he
+showed live that evening. Do not assume the Panel widget is placed
+or is his primary home-screen surface. **His decision the same
+evening: keep this app for its search bar and shortcuts** — the app
+is not retired; only the Panel widget was replaced, and the panel
+data lane below stays as-is. A note of the change is in the
+project's GitHub README (Status note — 2026-11-07).** Project:
 `~/workspace/meta-muse-widget/` (public repo
 `jonathancruzate/meta-muse-widget`); the full build history is
 `BUILD-REPORT.md` in that folder.
