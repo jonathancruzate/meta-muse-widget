@@ -2,14 +2,14 @@
 <!-- One UI palette, spec section 3 + One UI 9 addendum (standard section 9).
      Light theme values; values-night overrides the grounds. -->
 <resources>
-    <color name="ground">#FAFAFA</color>
+    <color name="ground">#FCFCFC</color>
     <color name="container">#FFFFFF</color>
-    <color name="component">#E8E8EA</color>
-    <color name="foreground">#2E2E30</color>
-    <color name="secondary">#76767A</color>
-    <color name="primary">#0381FE</color>
-    <color name="primary_dark">#0072DE</color>
-    <color name="activated">#3E91FF</color>
+    <color name="component">#F3F4F5</color>
+    <color name="foreground">#111112</color>
+    <color name="secondary">#99111112</color>
+    <color name="primary">#0064D4</color>
+    <color name="primary_dark">#0363D5</color>
+    <color name="activated">#0064E0</color>
     <color name="glass_fill">#B8FFFFFF</color>
     <!-- Finder-modeled widget pill: the One UI 9 Finder bar is a matte,
          borderless light pill (its on-screen read over his wallpaper
@@ -22,7 +22,7 @@
     <color name="glass_border">#0F000000</color>
     <color name="nowbar_fill">#F20A0A0A</color>
     <color name="on_primary">#FFFFFF</color>
-    <color name="divider">#1F000000</color>
+    <color name="divider">#1A000000</color>
     <!-- Stephany theme: the muted pink of Stephany's sweater (the one from
          when they first met; photo supplied 2026-10-25). stephany_accent is
          sampled from the sweater itself (#B46C5D, median of lit knit
@@ -32,9 +32,16 @@
     <color name="stephany_accent">#B46C5D</color>
     <color name="stephany_accent_soft">#EFDBD6</color>
     <color name="stephany_accent_strong">#96544A</color>
-    <!-- Muse Launcher Pack accent (design D6, adopted 2026-11-12):
-         the Muse rose, the pack's single accent over the One UI /
-         Material You surfaces. -->
-    <color name="muse_rose">#EE2E7B</color>
-    <color name="muse_rose_soft">#FCE4EE</color>
+    <!-- Muse Launcher Pack accent: the official Muse app's VDS
+         palette, decomposed from com.facebook.aura 13.0.0.4.159
+         (2026-11-13; tokens in muse-ux-ui-rea/MUSE-DESIGN-TOKENS.md).
+         Supersedes design D6's rose #EE2E7B, which appears nowhere
+         in the app's palette. Accent = VDS accent/primary button;
+         the signature gradient runs MAGENTA_550 to BLUE_600. -->
+    <color name="muse_accent">#0064D4</color>
+    <color name="muse_accent_soft">#E8F0FA</color>
+    <color name="muse_gradient_start">#C143E4</color>
+    <color name="muse_gradient_end">#0363D5</color>
+    <color name="muse_bubble">#E9EAEB</color>
+    <color name="border">#E9EAEB</color>
 </resources>

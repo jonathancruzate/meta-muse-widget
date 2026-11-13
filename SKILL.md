@@ -31,7 +31,7 @@ the same document — update both in the same handling, always.
   GitHub project name; the old package line is abandoned). Display
   label: **Muse Launcher Pack** since v5.0.0 (was Muse Widget
   through v4.12.2). minSdk 24, targetSdk 35.
-- **Latest build: v5.2.0 (versionCode 44)** —
+- **Latest build: v5.3.0 (versionCode 45)** — see the v5.3.0 note below; prior: v5.2.0 (versionCode 44)** —
   `Meta-Muse-Widget-5.2.0.apk` in the project root, SHA-256
   `0f2ef6d7854cab6248c6822cb5ed755a344b9cdb3d9479c8985ab85a84468fff`.
   The v5 line is the Muse Launcher Pack (below); intermediate
@@ -52,6 +52,14 @@ the same document — update both in the same handling, always.
 - **What is actually installed on the phone is unverified from the
   repo** — check before assuming (see Verify below). Chat-delivered
   APKs can sit uninstalled while the repo moves on.
+- **v5.3.0 (versionCode 45) — Muse-app aesthetic match
+  (2026-11-13):** palette remapped to the official Muse app's
+  VDS tokens decomposed from com.facebook.aura 13.0.0.4.159
+  (accent #0064D4 / dark #007FFD, grounds #FCFCFC / #050505,
+  cards #FFFFFF / #1F1F1F, text #111112 / #F5F5F5, card radius
+  20dp; tokens doc in muse-ux-ui-rea). Supersedes D6's rose.
+  Installed and dumpsys-verified the same night.
+
 
 ## The fact that shapes everything: Muse's deeplinks are gated
 

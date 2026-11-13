@@ -2,6 +2,6 @@
 <!-- Per-mode theming (Pack v5.2.0): work tint, the rose family
      at reading strength. -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
-    <corners android:radius="18dp" />
-    <solid android:color="@color/muse_rose_soft" />
+    <corners android:radius="20dp" />
+    <solid android:color="@color/muse_accent_soft" />
 </shape>

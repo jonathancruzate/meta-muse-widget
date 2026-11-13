@@ -2,6 +2,6 @@
 <!-- Per-mode theming (Pack v5.2.0): night-dim card, used when
      the house is in Sleep regardless of the system theme. -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
-    <corners android:radius="18dp" />
-    <solid android:color="#1B1B1D" />
+    <corners android:radius="20dp" />
+    <solid android:color="#1F1F1F" />
 </shape>

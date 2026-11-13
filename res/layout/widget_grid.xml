@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/pack_grid_name"
-            android:textColor="@color/muse_rose"
+            android:textColor="@color/muse_accent"
             android:textSize="11sp"
             android:textStyle="bold" />
 
@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:padding="2dp"
             android:text="@string/pack_grid_all"
-            android:textColor="@color/muse_rose"
+            android:textColor="@color/muse_accent"
             android:textSize="11sp" />
     </LinearLayout>
     <LinearLayout

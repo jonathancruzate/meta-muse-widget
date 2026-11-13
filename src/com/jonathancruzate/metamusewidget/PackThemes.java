@@ -54,16 +54,16 @@ final class PackThemes {
                 views.setInt(R.id.tile_root, "setBackgroundResource",
                         R.drawable.bg_pack_card_nightdim);
                 views.setTextColor(R.id.tv_kind,
-                        Color.parseColor("#F06A9B"));
+                        Color.parseColor("#007FFD"));
                 views.setTextColor(R.id.tv_value,
-                        Color.parseColor("#F5F5F7"));
+                        Color.parseColor("#F5F5F5"));
                 views.setTextColor(R.id.tv_body,
-                        Color.parseColor("#AEAEB2"));
+                        Color.parseColor("#99F5F5F5"));
                 if (hasMeta) {
                     views.setTextColor(R.id.tv_age,
-                            Color.parseColor("#AEAEB2"));
+                            Color.parseColor("#99F5F5F5"));
                     views.setTextColor(R.id.tv_refresh,
-                            Color.parseColor("#F06A9B"));
+                            Color.parseColor("#007FFD"));
                 }
             } else if (variant == WORK) {
                 views.setInt(R.id.tile_root, "setBackgroundResource",

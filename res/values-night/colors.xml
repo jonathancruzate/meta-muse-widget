@@ -2,14 +2,14 @@
 <!-- One UI dark: smoked black ground, #17171A containers (kit facts),
      glass floating layer per standard section 9. -->
 <resources>
-    <color name="ground">#000000</color>
-    <color name="container">#17171A</color>
-    <color name="component">#17171A</color>
-    <color name="foreground">#FCFCFF</color>
-    <color name="secondary">#848487</color>
-    <color name="primary">#0381FE</color>
-    <color name="primary_dark">#3E91FF</color>
-    <color name="activated">#3E91FF</color>
+    <color name="ground">#050505</color>
+    <color name="container">#1F1F1F</color>
+    <color name="component">#28292B</color>
+    <color name="foreground">#F5F5F5</color>
+    <color name="secondary">#99F5F5F5</color>
+    <color name="primary">#007FFD</color>
+    <color name="primary_dark">#007FFD</color>
+    <color name="activated">#007FFD</color>
     <color name="glass_fill">#C7121214</color>
     <!-- Exact night value from One UI Home: #f23d3d3d. -->
     <color name="finder_fill">#3D3D3D</color>
@@ -21,4 +21,11 @@
     <color name="stephany_accent">#C98374</color>
     <color name="stephany_accent_soft">#4A3532</color>
     <color name="stephany_accent_strong">#DCAFA4</color>
+    <!-- VDS dark accent family (see values/colors.xml note). -->
+    <color name="muse_accent">#007FFD</color>
+    <color name="muse_accent_soft">#1C2B33</color>
+    <color name="muse_gradient_start">#C143E4</color>
+    <color name="muse_gradient_end">#0363D5</color>
+    <color name="muse_bubble">#1F1F1F</color>
+    <color name="border">#343638</color>
 </resources>
