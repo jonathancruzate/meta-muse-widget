@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Muse Omnibar (Pack v5.0.0): body tap opens Muse Search, the
+     Muse mark opens Muse Today, the mic fires Device Assistance
+     voice mode. RemoteViews-supported classes only. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/omnibar_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_pack_omnibar"
+    android:contentDescription="@string/pack_omnibar_name"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="14dp"
+    android:paddingEnd="14dp">
+
+    <ImageView
+        android:id="@+id/iv_logo"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
+        android:contentDescription="@string/pack_today_name"
+        android:src="@drawable/ic_muse_m" />
+
+    <TextView
+        android:id="@+id/tv_hint"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_weight="1"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:text="@string/pack_omnibar_hint"
+        android:textColor="@color/secondary"
+        android:textSize="14sp" />
+
+    <ImageView
+        android:id="@+id/iv_mic"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:contentDescription="@string/pack_voice_name"
+        android:src="@drawable/ic_mic" />
+</LinearLayout>

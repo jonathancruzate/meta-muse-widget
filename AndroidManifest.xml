@@ -15,6 +15,16 @@
     <!-- Wallpaper read for the glass pill (file lane, older APIs). -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
+    <!-- Muse Launcher Pack v5.1.0: the leave-by Live Update
+         feeder posts one ongoing notification; the grant itself
+         is the user's, asked by the system, never assumed. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- Muse Launcher Pack v5.2.0 (design D4): the Sleep tile
+         reads last night's sleep summary on device only. The
+         grant lives in the Health Connect app and stays the
+         user's to give or withhold; without it the tile shows
+         its designed empty state. -->
+    <uses-permission android:name="android.permission.health.READ_SLEEP" />
 
     <application
         android:allowBackup="false"
@@ -158,6 +168,143 @@
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_info_shortcuts" />
+        </receiver>
+
+
+        <!-- Muse Launcher Pack (v5.0.0): search, grid, house,
+             setup wizard, tile configure, voice trampoline. -->
+        <activity
+            android:name=".MuseSearchActivity"
+            android:exported="false"
+            android:label="@string/pack_search_title"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+
+        <activity
+            android:name=".MuseGridActivity"
+            android:exported="false"
+            android:label="@string/pack_grid_title"
+            android:theme="@style/AppTheme" />
+
+        <activity
+            android:name=".HouseActivity"
+            android:exported="false"
+            android:label="@string/pack_kind_pick_house"
+            android:theme="@style/AppTheme" />
+
+        <activity
+            android:name=".SetupWizardActivity"
+            android:exported="false"
+            android:label="@string/pack_wizard_title"
+            android:theme="@style/AppTheme" />
+
+        <activity
+            android:name=".TileConfigureActivity"
+            android:exported="true"
+            android:label="@string/pack_tile_name"
+            android:theme="@style/AppTheme">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".PackVoiceActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:noHistory="true"
+            android:theme="@android:style/Theme.NoDisplay" />
+
+        <!-- Muse Omnibar widget (Pack v5.0.0). -->
+        <receiver
+            android:name=".MuseOmnibarWidgetProvider"
+            android:exported="true"
+            android:label="@string/pack_omnibar_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.jonathancruzate.metamusewidget.action.PACK_REFRESH" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info_omnibar" />
+        </receiver>
+
+        <!-- Muse tile framework (Pack v5.0.0). -->
+        <receiver
+            android:name=".MuseTileWidgetProvider"
+            android:exported="true"
+            android:label="@string/pack_tile_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.jonathancruzate.metamusewidget.action.PACK_REFRESH" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info_tile" />
+        </receiver>
+
+        <!-- Muse Context Stack cards (Pack v5.0.0). -->
+        <receiver
+            android:name=".MuseStackWidgetProvider"
+            android:exported="true"
+            android:label="@string/pack_stack_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.jonathancruzate.metamusewidget.action.PACK_REFRESH" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info_stack" />
+        </receiver>
+
+        <!-- Muse Grid widget (Pack v5.0.0). -->
+        <receiver
+            android:name=".MuseGridWidgetProvider"
+            android:exported="true"
+            android:label="@string/pack_grid_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.jonathancruzate.metamusewidget.action.PACK_REFRESH" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info_grid" />
+        </receiver>
+
+        <!-- House Control widget (Pack v5.1.0). -->
+        <receiver
+            android:name=".MuseHouseWidgetProvider"
+            android:exported="true"
+            android:label="@string/pack_house_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.jonathancruzate.metamusewidget.action.PACK_REFRESH" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info_house" />
+        </receiver>
+
+        <!-- Pack action commands (voice, DND, media): own-app
+             PendingIntents only. -->
+        <receiver
+            android:name=".PackActionReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.jonathancruzate.metamusewidget.action.PACK_VOICE" />
+                <action android:name="com.jonathancruzate.metamusewidget.action.PACK_DND_TOGGLE" />
+                <action android:name="com.jonathancruzate.metamusewidget.action.PACK_MEDIA_TOGGLE" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Device Assistance context pokes (design 7.3). -->
+        <receiver
+            android:name=".ContextReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.jonathancruzate.metamusedeviceassistance.action.CONTEXT_MODE" />
+                <action android:name="com.jonathancruzate.metamusedeviceassistance.action.CONTEXT_MEDIA" />
+            </intent-filter>
         </receiver>
 
     </application>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Joined-tile background variant (design visual system): tiles
+     stacked with zero gap read as one block. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <corners android:topLeftRadius="4dp" android:topRightRadius="4dp" android:bottomRightRadius="4dp" android:bottomLeftRadius="4dp" />
+    <solid android:color="@color/container" />
+</shape>

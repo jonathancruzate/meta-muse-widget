@@ -29,10 +29,15 @@ the same document — update both in the same handling, always.
 - **Package:** `com.jonathancruzate.metamusewidget` (renamed in
   v4.11.0 from `com.samsung.oneui9.metamusewidget` to match the
   GitHub project name; the old package line is abandoned). Display
-  label: **Muse Widget**. minSdk 24, targetSdk 35.
-- **Latest build: v4.12.2 (versionCode 41)** —
-  `Meta-Muse-Widget-4.12.2.apk` in the project root, SHA-256
-  `c431e858d0fdccdfe640f8dff20d649ec82dad3477b7b9b97942cfda06025f1c`.
+  label: **Muse Launcher Pack** since v5.0.0 (was Muse Widget
+  through v4.12.2). minSdk 24, targetSdk 35.
+- **Latest build: v5.2.0 (versionCode 44)** —
+  `Meta-Muse-Widget-5.2.0.apk` in the project root, SHA-256
+  `0f2ef6d7854cab6248c6822cb5ed755a344b9cdb3d9479c8985ab85a84468fff`.
+  The v5 line is the Muse Launcher Pack (below); intermediate
+  builds v5.0.0 (code 42) and v5.1.0 (code 43) are in
+  BUILD-REPORT.md with their hashes. Staged, not yet installed
+  as of 2026-11-12 (phone ADB lane was down at build time).
   Version truth lives in `build.sh` (its `--version-code` /
   `--version-name` on the aapt2 link line); per-version notes live in
   `BUILD-REPORT.md` (its last entry is v4.12.1 — the v4.12.2 note
@@ -267,3 +272,50 @@ of its legacy shortcut handling; layout and rendering untouched).
   the styling is built from.
 - `github-export/README.md` — the public-facing release notes
   (carries the v4.12.2 note).
+
+
+## Muse Launcher Pack (v5.x, built 2026-11-12)
+
+The app is now the widget-pack layer of the Muse Launcher
+(design + execution record: the companion-layer goal's
+`Muse-Launcher-Pack-Design.md`; theme kit beside it). One UI
+Home stays the launcher; the pack adds:
+
+- **Providers:** MuseOmnibarWidgetProvider (search/today/
+  voice pill), MuseTileWidgetProvider (one provider,
+  per-instance kind via TileConfigureActivity; kinds: brief,
+  up_next, house, transit, media, voice, decide, clock,
+  money, people, sleep, setup), MuseStackWidgetProvider
+  (4x2 Context Stack cards), MuseGridWidgetProvider
+  (favorite apps), MuseHouseWidgetProvider (House Control:
+  verified state + DND/media/voice/today through Device
+  Assistance). The three pre-pack widgets are unchanged; the
+  search-bar surfaces are FROZEN (baseline hashes in
+  BUILD-REPORT v5.0.0 entry; note the provider hash moved in
+  v4.10.0, so the v4.5.3-era recorded hash is stale).
+- **Activities:** MuseSearchActivity, MuseGridActivity
+  (App Pairs sequenced via DA app_launch when paired),
+  HouseActivity, SetupWizardActivity (self-checking setup +
+  drift report via PackDrift), PackVoiceActivity.
+- **Feed bundle v2:** the panel lane now also serves
+  up_next / transit / money distillates (Worker feed_version
+  2; producer panel-brief-push.py). Tiles degrade to designed
+  empty states when a feed is absent. Money has no producer
+  yet (no finance distillate in the brief snapshot).
+- **Device Assistance local channel:** DaClient ->
+  ContentProvider call() on DA's LocalChannel (cert-verified
+  + pairing token; see the Device Assistance skill). Pack
+  prefs live in PackPrefs (file "muse_pack"), NOT the frozen
+  WidgetPrefs.
+- **Live Updates:** LiveUpdateFeeder posts the leave-by
+  countdown as an ongoing notification (promoted ongoing on
+  API 36+, requested reflectively because the vendored
+  android-36 stub predates the Builder method).
+- **Sleep tile:** framework Health Connect read of last
+  night's sessions (API 34+), on-device only, grant is the
+  user's in Health Connect.
+- **Build law additions:** NO lambdas anywhere in this app
+  (javac runs -bootclasspath + source 8; LambdaMetafactory is
+  absent and the build fails on any lambda). Compile jar is
+  android-36 since v5.1.0. The render + no-secrets guards
+  cover every new layout/provider automatically.

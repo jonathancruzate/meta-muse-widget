@@ -2,7 +2,7 @@
 
 Home-screen widget and **Muse companion layer** for **Muse from Meta**
 (`com.facebook.aura`) on Samsung Galaxy devices, running on stock
-One UI Home. Current release: **v4.12.2**.
+One UI Home. Current release: **v5.2.0 — Muse Launcher Pack**.
 
 ## Status note — 2026-11-07: the Panel widget steps aside; the app stays
 
@@ -19,6 +19,25 @@ Activities picker, app-icon and QS-tile shortcuts). The Panel
 widget and the Muse companion panel remain in the app as built;
 only their place on one home screen changed. No code changes in
 this note.
+
+## v5.0.0 to v5.2.0 — Muse Launcher Pack (2026-11-12)
+
+The app becomes the **Muse Launcher Pack**: a widget pack that
+turns stock One UI Home into the Muse Launcher with Good Lock,
+without replacing the launcher. Same package, same signing
+key, install-over upgrade. Full per-version records:
+BUILD-REPORT.md in the project (v5.0.0 / v5.1.0 / v5.2.0
+entries) and the design document in the companion-layer goal.
+
+- v5.0.0: Muse Omnibar, the tile framework (per-instance
+  kinds), Context Stack cards, Grid widget, Muse Search and
+  Muse Grid activities, feed bundle v2 client, setup wizard,
+  and the Device Assistance local-channel client.
+- v5.1.0: House Control widget, Money and People tile kinds,
+  the leave-by Live Update feeder (promoted ongoing on
+  Android 16+).
+- v5.2.0: per-mode theming, theme drift detection, the Sleep
+  tile (Health Connect, on-device only).
 
 ## v4.12.2 — Voice mode setup: enable-accessibility button
 

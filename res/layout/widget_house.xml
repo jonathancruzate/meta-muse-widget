@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- House Control widget (Pack v5.1.0): verified house state from
+     the feed, four action cells executed through Device Assistance
+     and re-rendered from its acknowledgement. RemoteViews only. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/house_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_panel_widget"
+    android:orientation="vertical"
+    android:padding="14dp">
+
+    <TextView
+        android:id="@+id/tv_kind"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:singleLine="true"
+        android:text="@string/pack_kind_house_control"
+        android:textColor="@color/muse_rose"
+        android:textSize="11sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_value"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:textColor="@color/foreground"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_body"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:textColor="@color/secondary"
+        android:textSize="12sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/act_dnd"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_pack_action"
+            android:gravity="center"
+            android:padding="8dp"
+            android:text="@string/pack_house_dnd"
+            android:textColor="@color/foreground"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/act_media"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_pack_action"
+            android:gravity="center"
+            android:padding="8dp"
+            android:text="@string/pack_house_media"
+            android:textColor="@color/foreground"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/act_voice"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_pack_action"
+            android:gravity="center"
+            android:padding="8dp"
+            android:text="@string/pack_house_voice"
+            android:textColor="@color/foreground"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/act_today"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/bg_pack_action"
+            android:gravity="center"
+            android:padding="8dp"
+            android:text="@string/pack_house_today"
+            android:textColor="@color/foreground"
+            android:textSize="12sp" />
+    </LinearLayout>
+</LinearLayout>

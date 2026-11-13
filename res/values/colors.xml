@@ -32,4 +32,9 @@
     <color name="stephany_accent">#B46C5D</color>
     <color name="stephany_accent_soft">#EFDBD6</color>
     <color name="stephany_accent_strong">#96544A</color>
+    <!-- Muse Launcher Pack accent (design D6, adopted 2026-11-12):
+         the Muse rose, the pack's single accent over the One UI /
+         Material You surfaces. -->
+    <color name="muse_rose">#EE2E7B</color>
+    <color name="muse_rose_soft">#FCE4EE</color>
 </resources>
