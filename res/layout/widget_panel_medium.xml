@@ -19,8 +19,8 @@
         android:ellipsize="end"
         android:maxLines="2"
         android:textColor="@color/foreground"
-        android:textSize="16sp"
-        android:textStyle="bold" />
+        android:textSize="15sp"
+        android:textStyle="bold"  android:letterSpacing="0.015"/>
 
     <TextView
         android:id="@+id/tv_status"
@@ -145,7 +145,7 @@
             android:contentDescription="@string/panel_refresh"
             android:padding="4dp"
             android:text="@string/panel_refresh"
-            android:textColor="@color/primary"
-            android:textSize="13sp" />
+            android:textColor="@color/muse_updated"
+            android:textSize="13sp"  android:letterSpacing="0.01"/>
     </LinearLayout>
 </LinearLayout>

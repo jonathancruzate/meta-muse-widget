@@ -1572,3 +1572,26 @@ passed. Cert unchanged (SHA-256 2746d2a2...). APK 476K,
 SHA-256 6f4e9b4b78861f5a959b884ecca302f2376f1baaec9ab5f685e
 7b5d4b926eaad. Installed -r via the ADB lane and verified by
 dumpsys (versionCode 45, versionName 5.3.0).
+
+## v5.3.1 (code 46) — 2026-11-13: widget text matched to Muse's Spaces widgets
+
+Per Jonathan's order, the pack's name and update-time text now uses
+the exact metrics of the Muse app's own Spaces widgets, extracted
+from his installed Muse app (15.0.0.3.156, pulled from the phone;
+the 13.0.0.4.159 reference build predates the widgets, manifest has
+zero APPWIDGET receivers). Muse widget styles (Optimistic VF):
+space name 15sp, 'wght' 600, #111112 (night #F5F5F5),
+letterSpacing 0.015; update time 13sp, #99000409 (night #99F2F7FF),
+letterSpacing 0.01. Applied: panel tv_headline 16sp to 15sp +
+letterSpacing .015 (all three panels); panel tv_refresh takes the
+new muse_updated color (layout + MusePanelWidgetProvider, which
+previously forced the theme accent); tile/stack tv_age 11sp to 13sp
++ muse_updated + letterSpacing .01; PackThemes night-dim age/refresh
+now #99F2F7FF. Font family stays the system sans: Optimistic is
+Meta's proprietary font and the repo ships publicly; size, weight,
+color and spacing match exactly. Frozen surfaces unchanged
+(SearchBarWidgetProvider 8c38e8da, WidgetPrefs 45faf007,
+widget_search_bar.xml 8d9fa2ce, widget_info_search.xml 66ab0aa5).
+Both guards passed. Cert unchanged (2746d2a2...). APK 476K,
+SHA-256 ae97f804c7f2ba22 (full hash in the install record).
+Installed -r via the ADB lane, dumpsys-verified (46 / 5.3.1).

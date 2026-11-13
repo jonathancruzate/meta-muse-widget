@@ -61,9 +61,9 @@ final class PackThemes {
                         Color.parseColor("#99F5F5F5"));
                 if (hasMeta) {
                     views.setTextColor(R.id.tv_age,
-                            Color.parseColor("#99F5F5F5"));
+                            Color.parseColor("#99F2F7FF"));
                     views.setTextColor(R.id.tv_refresh,
-                            Color.parseColor("#007FFD"));
+                            Color.parseColor("#99F2F7FF"));
                 }
             } else if (variant == WORK) {
                 views.setInt(R.id.tile_root, "setBackgroundResource",

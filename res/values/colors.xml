@@ -44,4 +44,10 @@
     <color name="muse_gradient_end">#0363D5</color>
     <color name="muse_bubble">#E9EAEB</color>
     <color name="border">#E9EAEB</color>
+
+    <!-- Update-time text color from the Muse app Spaces widget styles
+         (v15.0.0.3.156 on-device: space name 15sp, wght 600, #111112,
+         letterSpacing .015; update time 13sp, #99000409, ls .01;
+         both Optimistic VF. Night values in values-night.) -->
+    <color name="muse_updated">#99000409</color>
 </resources>

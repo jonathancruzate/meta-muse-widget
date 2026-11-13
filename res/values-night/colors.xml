@@ -26,6 +26,7 @@
     <color name="muse_accent_soft">#1C2B33</color>
     <color name="muse_gradient_start">#C143E4</color>
     <color name="muse_gradient_end">#0363D5</color>
+    <color name="muse_updated">#99F2F7FF</color>
     <color name="muse_bubble">#1F1F1F</color>
     <color name="border">#343638</color>
 </resources>

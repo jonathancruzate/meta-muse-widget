@@ -31,7 +31,7 @@ the same document — update both in the same handling, always.
   GitHub project name; the old package line is abandoned). Display
   label: **Muse Launcher Pack** since v5.0.0 (was Muse Widget
   through v4.12.2). minSdk 24, targetSdk 35.
-- **Latest build: v5.3.0 (versionCode 45)** — see the v5.3.0 note below; prior: v5.2.0 (versionCode 44)** —
+- **Latest build: v5.3.1 (versionCode 46)** — widget name/update-time text matched to the Muse app's Spaces widget styles (extracted from his installed Muse 15.0.0.3.156: name 15sp wght 600 #111112 ls .015; update time 13sp #99000409, night #99F2F7FF, ls .01; system font stands in for Optimistic). Prior: v5.3.0 (versionCode 45)** —
   `Meta-Muse-Widget-5.2.0.apk` in the project root, SHA-256
   `0f2ef6d7854cab6248c6822cb5ed755a344b9cdb3d9479c8985ab85a84468fff`.
   The v5 line is the Muse Launcher Pack (below); intermediate

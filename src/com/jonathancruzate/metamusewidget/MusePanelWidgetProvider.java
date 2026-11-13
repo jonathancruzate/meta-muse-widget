@@ -296,7 +296,8 @@ public class MusePanelWidgetProvider extends AppWidgetProvider {
                 PendingIntent.getBroadcast(ctx, 5000 + id, refresh,
                         PendingIntent.FLAG_UPDATE_CURRENT
                                 | PendingIntent.FLAG_IMMUTABLE));
-        views.setTextColor(R.id.tv_refresh, accent);
+        views.setTextColor(R.id.tv_refresh,
+                ctx.getColor(R.color.muse_updated));
 
         if (density == DENSITY_MEDIUM) {
             views.setTextViewText(R.id.tv_house, houseOneLine(model));
