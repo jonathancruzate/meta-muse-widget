@@ -357,3 +357,15 @@ Just give this prompt to your Muse:
 
 Or add this repo in [Obtainium](https://github.com/ImranR98/Obtainium) — it tracks the GitHub releases and keeps the app updated automatically. It works really well.
 
+
+## Icon (2026-11-21, v5.3.2)
+
+This app's launcher icon is its own from the approved unique Muse app
+icon set: the original official Muse blue M on a light tile (#F0F2F5)
+plus a purple grid badge. This supersedes the 2026-11-01 rule that all
+Muse APKs share the identical Muse Widget icon. Legacy mipmaps + round
++ adaptive icon (background #F0F2F5, foreground art at 76% centred).
+Note: the icon PNG binaries are not in this snapshot commit; the GitHub
+connector's push lane is UTF-8 text only, so the PNGs follow via the
+browser upload lane. The adaptive-icon XML and background colour in
+res/ are the text half of the same change.
