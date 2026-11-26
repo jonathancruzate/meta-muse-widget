@@ -194,7 +194,7 @@
     <string name="pack_wizard_widgets">Muse widgets placed</string>
     <string name="pack_wizard_da">Device Assistance</string>
     <string name="pack_wizard_da_missing">Not installed. House actions and voice stay off.</string>
-    <string name="pack_wizard_da_unpaired">Installed, not paired. Open Device Assistance, tap Pair Muse Launcher Pack, then Complete pairing here.</string>
+    <string name="pack_wizard_da_unpaired">Installed, not paired. In Device Assistance, scroll to "Muse Launcher Pack — local channel" and tap "Open pairing window (5 min)", then tap Complete pairing here within 5 minutes.</string>
     <string name="pack_wizard_da_paired">Paired. House actions run through Device Assistance.</string>
     <string name="pack_wizard_calendar">Calendar permission</string>
     <string name="pack_wizard_calendar_ok">Granted. Up Next reads your calendar on device.</string>

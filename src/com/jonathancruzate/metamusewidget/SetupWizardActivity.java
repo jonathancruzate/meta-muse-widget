@@ -92,16 +92,24 @@ public class SetupWizardActivity extends Activity {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            final boolean ok =
-                                    DaClient.claimPairing(app);
+                            final String failure =
+                                    DaClient.claimPairingWithReason(app);
+                            final boolean ok = failure == null;
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    Toast.makeText(
-                                            SetupWizardActivity.this,
-                                            ok ? R.string.pack_pair_ok
-                                                    : R.string.pack_pair_failed,
-                                            Toast.LENGTH_LONG).show();
+                                    if (ok) {
+                                        Toast.makeText(
+                                                SetupWizardActivity.this,
+                                                R.string.pack_pair_ok,
+                                                Toast.LENGTH_LONG).show();
+                                    } else {
+                                        Toast.makeText(
+                                                SetupWizardActivity.this,
+                                                "Pairing did not complete: "
+                                                        + failure,
+                                                Toast.LENGTH_LONG).show();
+                                    }
                                     PackWidgetProvider.pokeAll(app);
                                     build();
                                 }

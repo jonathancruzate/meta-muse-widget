@@ -46,14 +46,31 @@ final class DaClient {
      * true is returned.
      */
     static boolean claimPairing(Context ctx) {
+        return claimPairingWithReason(ctx) == null;
+    }
+
+    /**
+     * Claim a pairing token, surfacing the real failure reason.
+     * Returns null on success (the token is stored in PackPrefs,
+     * exactly as claimPairing does); on failure returns the
+     * reason string from the result Bundle (the Device
+     * Assistance error string, or the caught exception's simple
+     * name, which call() records in the Bundle), so the caller
+     * can show Jonathan what actually went wrong.
+     */
+    static String claimPairingWithReason(Context ctx) {
         Bundle out = call(ctx, DaContract.METHOD_CLAIM_PAIRING,
                 new Bundle());
         String token = out.getString(DaContract.KEY_TOKEN, "");
         if (token != null && !token.isEmpty()) {
             PackPrefs.setDaToken(ctx, token);
-            return true;
+            return null;
         }
-        return false;
+        String error = out.getString(DaContract.KEY_ERROR, "");
+        if (error != null && !error.isEmpty()) {
+            return error;
+        }
+        return "no token returned";
     }
 
     /** Ask Device Assistance whether our stored token still pairs. */
